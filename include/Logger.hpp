@@ -32,11 +32,4 @@ void logError(std::string msg);
  */
 void log(std::string level, std::string msg);
 
-/**
- * Get current date and time as a string for logging.
- * 
- * @return Current date and time.
- */
-std::string getTime();
-
 #endif // LOGGER
