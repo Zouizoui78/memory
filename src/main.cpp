@@ -1,8 +1,16 @@
 #include "Logger.hpp"
+#include "Renderer.hpp"
+
+#include <iostream>
+#include <date/date.h>
 
 int main(int argc, char*argv[])
 {
-    const char* test = "salut";
-    logInfo(test);
+    Renderer r;
+    if(!r.init())
+    {
+        return -1;
+    }
+    
     return 0;
 }

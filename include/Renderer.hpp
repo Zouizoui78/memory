@@ -3,17 +3,11 @@
 
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <string>
 
-#include "Logger.hpp"
-
-typedef struct Color
-{
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
-} Color;
-
+/**
+ * This class handles everything directly related to rendering on screen.
+ */
 class Renderer
 {
     public:
@@ -66,14 +60,14 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool setViewport(const SDL_Rect* rect = nullptr);
+        bool setViewport(SDL_Rect* rect = nullptr);
 
         /**
          * Set default font for text rendering.
          * 
          * @param font Font to set as default.
          */
-        void setDefaultFont(const TTF_Font* font);
+        void setDefaultFont(TTF_Font* font);
 
         /**
          * Set the current rendering color used for rectangles, lines and clear.
@@ -82,28 +76,31 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool setDrawColor(const Color color);
+        bool setDrawColor(SDL_Color color);
 
         /**
          * Load an image into a texture.
          * 
-         * @param texture Texture to fill.
          * @param imgPath Path to the image to load.
          * 
-         * @return Ok or not.
+         * @return texture or nullptr on error.
          */
-        bool loadImage(SDL_Texture* texture, const char* imgPath);
+        SDL_Texture* loadImage(std::string& imgPath);
 
         /**
          * Create a texture from a text.
          * 
-         * @param texture Texture to render the text into.
          * @param text Text to render.
+         * @param color Text color, default is white.
          * @param font Font to use. Default font is used if nullptr.
          * 
-         * @return Ok or not.
+         * @return texture or nullptr on error.
          */
-        bool loadText(SDL_Texture* texture, const char* text, const TTF_Font* font = nullptr);
+        SDL_Texture* loadText(
+            std::string& text,
+            SDL_Color color = { 255, 255, 255, 255 },
+            TTF_Font* font = nullptr
+        );
 
         /**
          * Render a texture.
@@ -114,7 +111,7 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool renderTexture(SDL_Texture* texture, const SDL_Rect* dst = nullptr, const SDL_Rect* portion = nullptr);
+        bool renderTexture(SDL_Texture* texture, SDL_Rect* dst = nullptr, SDL_Rect* portion = nullptr);
 
         /**
          * Render the rectangle.
@@ -123,7 +120,7 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool renderRectangle(const SDL_Rect* rect);
+        bool renderRectangle(SDL_Rect* rect);
     
     private:
         /**
@@ -132,6 +129,15 @@ class Renderer
          * @return Ok or not.
          */
         bool _getScreenSize();
+
+        /**
+         * Create a texture from a surface. The surface is freed.
+         * 
+         * @param surface
+         * 
+         * @return texture or nullptr on error.
+         */
+        SDL_Texture* _surfaceToTexture(SDL_Surface* surface);
 
         /**
          * Window's and renderer width.
