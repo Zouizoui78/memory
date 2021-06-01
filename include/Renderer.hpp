@@ -29,7 +29,7 @@ class Renderer
         /**
          * Render current back buffer.
          */
-        void render();
+        void refresh();
 
         /**
          * Clear the screen and fill it with the current drawing color.
@@ -60,7 +60,7 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool setViewport(SDL_Rect* rect = nullptr);
+        bool setViewport(const SDL_Rect* rect = nullptr);
 
         /**
          * Set default font for text rendering.
@@ -76,7 +76,7 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool setDrawColor(SDL_Color color);
+        bool setDrawColor(const SDL_Color& color);
 
         /**
          * Load an image into a texture.
@@ -85,7 +85,7 @@ class Renderer
          * 
          * @return texture or nullptr on error.
          */
-        SDL_Texture* loadImage(std::string& imgPath);
+        SDL_Texture* loadImage(const std::string& imgPath);
 
         /**
          * Create a texture from a text.
@@ -97,7 +97,7 @@ class Renderer
          * @return texture or nullptr on error.
          */
         SDL_Texture* loadText(
-            std::string& text,
+            const std::string& text,
             SDL_Color color = { 255, 255, 255, 255 },
             TTF_Font* font = nullptr
         );
@@ -106,12 +106,23 @@ class Renderer
          * Render a texture.
          * 
          * @param texture The texture to render.
-         * @param dst The destination rectangle in which the texture is rendered. Whole texture is rendered if nullptr.
+         * @param dst Part of the rendering target in which the texture is rendered. Whole rendering target if nullptr.
          * @param portion The portion of the texture to copy to the destination. Entire destination is used if nullptr.
          * 
          * @return Ok or not.
          */
-        bool renderTexture(SDL_Texture* texture, SDL_Rect* dst = nullptr, SDL_Rect* portion = nullptr);
+        bool renderTexture(SDL_Texture* texture, const SDL_Rect* dst = nullptr, const SDL_Rect* portion = nullptr);
+
+        /**
+         * Extract a part of a texture.
+         * 
+         * @param source Texture to extract a part of.
+         * @param dst Texture to render to. Will be erased.
+         * @param rect Part to extract.
+         * 
+         * @return Ok or not.
+         */
+        bool CropTexture(SDL_Texture* src, SDL_Texture*& dst, const SDL_Rect* rect);
 
         /**
          * Render the rectangle.
@@ -120,7 +131,7 @@ class Renderer
          * 
          * @return Ok or not.
          */
-        bool renderRectangle(SDL_Rect* rect);
+        bool renderRectangle(const SDL_Rect* rect);
     
     private:
         /**

@@ -67,7 +67,7 @@ void Renderer::stop()
     SDL_Quit();
 }
 
-void Renderer::render()
+void Renderer::refresh()
 {
     SDL_RenderPresent(_renderer);
 }
@@ -82,7 +82,7 @@ bool Renderer::clear()
     return true;
 }
 
-bool Renderer::setViewport(SDL_Rect* rect)
+bool Renderer::setViewport(const SDL_Rect* rect)
 {
     if(rect == nullptr)
     {
@@ -103,7 +103,7 @@ void Renderer::setDefaultFont(TTF_Font* font)
     _default_font = font;
 }
 
-bool Renderer::setDrawColor(SDL_Color color)
+bool Renderer::setDrawColor(const SDL_Color& color)
 {
     if(SDL_SetRenderDrawColor(
         _renderer,
@@ -119,7 +119,7 @@ bool Renderer::setDrawColor(SDL_Color color)
     return true;    
 }
 
-SDL_Texture* Renderer::loadImage(std::string& imgPath)
+SDL_Texture* Renderer::loadImage(const std::string& imgPath)
 {
     if(imgPath.empty())
     {
@@ -145,7 +145,7 @@ SDL_Texture* Renderer::loadImage(std::string& imgPath)
 }
 
 SDL_Texture* Renderer::loadText(
-    std::string& text,
+    const std::string& text,
     SDL_Color color,
     TTF_Font* font
 )
@@ -181,7 +181,7 @@ SDL_Texture* Renderer::loadText(
     return texture;
 }
 
-bool Renderer::renderTexture(SDL_Texture* texture, SDL_Rect* dst, SDL_Rect* portion)
+bool Renderer::renderTexture(SDL_Texture* texture, const SDL_Rect* dst, const SDL_Rect* portion)
 {
     if(texture == nullptr)
     {
@@ -197,7 +197,58 @@ bool Renderer::renderTexture(SDL_Texture* texture, SDL_Rect* dst, SDL_Rect* port
     return true;
 }
 
-bool Renderer::renderRectangle(SDL_Rect* rect)
+bool Renderer::CropTexture(SDL_Texture* src, SDL_Texture*& dst, const SDL_Rect* rect)
+{
+    if(src == nullptr)
+    {
+        logError("[Renderer] Cannot extract texture part, source = nullptr.");
+        return false;
+    }
+
+    if(rect == nullptr)
+    {
+        logError("[Renderer] Cannot extract texture part, rectangle = nullptr.");
+        return false;
+    } 
+
+    if(rect->h == 0 || rect->w == 0)
+    {
+        logError("[Renderer] Cannot extract texture part, rectangle has either height or width at 0.");
+        return false;
+    }
+
+    dst = SDL_CreateTexture(_renderer, SDL_GetWindowPixelFormat(_window), SDL_TEXTUREACCESS_TARGET, rect->w, rect->h);
+
+    if(dst == nullptr)
+    {
+        logError("[Renderer] Failed to create target texture.");
+        return false;
+    }
+
+    // Set render target to resulting texture.
+    if(SDL_SetRenderTarget(_renderer, dst) == -1)
+    {
+        logError("[Renderer] Failed to set rendering target prior to extract texture part.");
+        return false;
+    }
+
+    if(this->renderTexture(src, nullptr, rect) == false)
+    {
+        logError("[Renderer] Failed to render texture part to target texture.");
+        return false;
+    }
+
+    // Reset rendering target to default (screen).
+    if(SDL_SetRenderTarget(_renderer, NULL) == -1)
+    {
+        logError("[Renderer] Failed to set rendering target back to default.");
+        return false;
+    }
+
+    return true;
+}
+
+bool Renderer::renderRectangle(const SDL_Rect* rect)
 {
     if(!SDL_RenderDrawRect(_renderer, rect) == -1)
     {
