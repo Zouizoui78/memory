@@ -29,11 +29,11 @@ bool Renderer::init()
 
     _window = SDL_CreateWindow(
         "Memory", // Title
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
+        0,
+        0,
         _width,
         _height,
-        SDL_WINDOW_BORDERLESS
+        SDL_WINDOW_FULLSCREEN
     );
     if(_window == nullptr)
     {
