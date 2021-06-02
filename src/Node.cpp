@@ -113,30 +113,34 @@ Node* Node::findChild(const std::string& name)
 
 bool Node::render(Renderer* renderer)
 {
-    if(_texture == nullptr)
-    {
-        logError("[Node] Cannot render texture for node " + _name + ", _texture = nullptr");
-        return false;
-    }
-
     if(renderer == nullptr)
     {
         logError("[Node] Cannot render texture for node " + _name + ", renderer = nullptr");
         return false;
     }
 
-    SDL_Rect dst = *_destination;
-    if(_parent != nullptr)
+    if(_texture != nullptr)
     {
-        dst.x += _parent->getX();
-        dst.y += _parent->getY();
+        bool relative = _parent != nullptr && _destination != nullptr && _parent->getDestination() != nullptr;
+        if(relative)
+        {
+            _destination->x += _parent->getX();
+            _destination->y += _parent->getY();
+        }
+
+        if(!renderer->renderTexture(_texture, _destination))
+        {
+            logError("[Node] Failed to render " + _name);
+            return false;
+        }
+
+        if(relative)
+        {
+            _destination->x -= _parent->getX();
+            _destination->y -= _parent->getY();
+        }
     }
-    
-    if(!renderer->renderTexture(_texture, &dst))
-    {
-        logError("[Node] Failed to render " + _name);
-        return false;
-    }
+
     if(!this->renderChildren(renderer))
     {
         logError("[Node] " + _name + " : failed to render one or more children.");
