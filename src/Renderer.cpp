@@ -21,7 +21,7 @@ bool Renderer::init()
         return false;
     }
 
-    if(!_getScreenSize())
+    if(!getScreenSize())
     {
         logError("[Renderer] Failed to get screen's size.");
         return false;
@@ -82,7 +82,22 @@ bool Renderer::clear()
     return true;
 }
 
-bool Renderer::setViewport(const SDL_Rect* rect)
+SDL_Texture* Renderer::getRenderTarget()
+{
+    return SDL_GetRenderTarget(_renderer);
+}
+
+bool Renderer::setRenderTarget(SDL_Texture* dst)
+{
+    if(SDL_SetRenderTarget(_renderer, dst) == -1)
+    {
+        logError("[Renderer] Failed to set rendering target.");
+        return false;
+    }
+    return true;
+}
+
+bool Renderer::setViewport(SDL_Rect* rect)
 {
     if(rect == nullptr)
     {
@@ -98,12 +113,7 @@ bool Renderer::setViewport(const SDL_Rect* rect)
     return true;
 }
 
-void Renderer::setDefaultFont(TTF_Font* font)
-{
-    _default_font = font;
-}
-
-bool Renderer::setDrawColor(const SDL_Color& color)
+bool Renderer::setDrawColor(SDL_Color& color)
 {
     if(SDL_SetRenderDrawColor(
         _renderer,
@@ -134,12 +144,13 @@ SDL_Texture* Renderer::loadImage(const std::string& imgPath)
         return nullptr;
     }
 
-    SDL_Texture* texture = _surfaceToTexture(surface);
+    SDL_Texture* texture = surfaceToTexture(surface);
     if(texture == nullptr)
     {
         logError("[Renderer] Failed to create texture from image.");
         return nullptr;
     }
+
     logInfo("[Renderer] Image " + imgPath + " loaded.");
     return texture;
 }
@@ -171,7 +182,7 @@ SDL_Texture* Renderer::loadText(
         return nullptr;
     }
 
-    SDL_Texture* texture = _surfaceToTexture(surface);
+    SDL_Texture* texture = surfaceToTexture(surface);
     if(texture == nullptr)
     {
         logError("[Renderer] Failed to create texture from image.");
@@ -181,7 +192,7 @@ SDL_Texture* Renderer::loadText(
     return texture;
 }
 
-bool Renderer::renderTexture(SDL_Texture* texture, const SDL_Rect* dst, const SDL_Rect* portion)
+bool Renderer::renderTexture(SDL_Texture* texture, SDL_Rect* dst, SDL_Rect* portion)
 {
     if(texture == nullptr)
     {
@@ -197,7 +208,7 @@ bool Renderer::renderTexture(SDL_Texture* texture, const SDL_Rect* dst, const SD
     return true;
 }
 
-bool Renderer::CropTexture(SDL_Texture* src, SDL_Texture*& dst, const SDL_Rect* rect)
+bool Renderer::cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect)
 {
     if(src == nullptr)
     {
@@ -217,7 +228,7 @@ bool Renderer::CropTexture(SDL_Texture* src, SDL_Texture*& dst, const SDL_Rect* 
         return false;
     }
 
-    dst = SDL_CreateTexture(_renderer, SDL_GetWindowPixelFormat(_window), SDL_TEXTUREACCESS_TARGET, rect->w, rect->h);
+    dst = this->createBlankRenderTarget(rect->w, rect->h);
 
     if(dst == nullptr)
     {
@@ -225,30 +236,16 @@ bool Renderer::CropTexture(SDL_Texture* src, SDL_Texture*& dst, const SDL_Rect* 
         return false;
     }
 
-    // Set render target to resulting texture.
-    if(SDL_SetRenderTarget(_renderer, dst) == -1)
+    if(!this->renderToTexture(src, dst, rect))
     {
-        logError("[Renderer] Failed to set rendering target prior to extract texture part.");
-        return false;
-    }
-
-    if(this->renderTexture(src, nullptr, rect) == false)
-    {
-        logError("[Renderer] Failed to render texture part to target texture.");
-        return false;
-    }
-
-    // Reset rendering target to default (screen).
-    if(SDL_SetRenderTarget(_renderer, NULL) == -1)
-    {
-        logError("[Renderer] Failed to set rendering target back to default.");
+        logError("[Renderer] Failed to extract texture part.");
         return false;
     }
 
     return true;
 }
 
-bool Renderer::renderRectangle(const SDL_Rect* rect)
+bool Renderer::renderRectangle(SDL_Rect* rect)
 {
     if(!SDL_RenderDrawRect(_renderer, rect) == -1)
     {
@@ -258,7 +255,7 @@ bool Renderer::renderRectangle(const SDL_Rect* rect)
     return true;
 }
 
-bool Renderer::_getScreenSize()
+bool Renderer::getScreenSize()
 {
     SDL_DisplayMode mode = SDL_DisplayMode();
     if(SDL_GetDesktopDisplayMode(0, &mode) == -1)
@@ -271,7 +268,7 @@ bool Renderer::_getScreenSize()
     return true;
 }
 
-SDL_Texture* Renderer::_surfaceToTexture(SDL_Surface* surface)
+SDL_Texture* Renderer::surfaceToTexture(SDL_Surface* surface)
 {
     if(surface == nullptr)
     {
@@ -288,4 +285,56 @@ SDL_Texture* Renderer::_surfaceToTexture(SDL_Surface* surface)
 
     SDL_FreeSurface(surface);
     return texture;
+}
+
+SDL_Texture* Renderer::textureAsRenderingTarget(SDL_Texture* src, SDL_Rect* rect, bool freeSrc)
+{
+    SDL_Texture* dst = this->createBlankRenderTarget(rect->w, rect->h);
+
+    if(dst == nullptr)
+    {
+        logError("[Renderer] Failed to create target texture.");
+        return nullptr;
+    }
+
+    if(!this->renderToTexture(src, dst, rect))
+    {
+        logError("[Renderer] Failed to copy texture into a new rendering target texture.");
+        return nullptr;
+    }
+
+    return dst;
+}
+
+bool Renderer::renderToTexture(SDL_Texture* src, SDL_Texture* dst, SDL_Rect* dstRect)
+{
+    // Backup rendering target.
+    SDL_Texture* target = this->getRenderTarget();
+
+    // Set render target to destination texture.
+    if(!this->setRenderTarget(dst))
+    {
+        logError("[Renderer] Failed to set rendering target prior to render to texture.");
+        return false;
+    }
+
+    if(this->renderTexture(src, nullptr, dstRect) == false)
+    {
+        logError("[Renderer] Failed to render texture to target texture.");
+        return false;
+    }
+
+    // Restore rendering target.
+    if(!this->setRenderTarget(target))
+    {
+        logError("[Renderer] Failed to set rendering target back to default.");
+        return false;
+    }
+
+    return true;
+}
+
+SDL_Texture* Renderer::createBlankRenderTarget(int width, int height)
+{
+    return SDL_CreateTexture(_renderer, SDL_GetWindowPixelFormat(_window), SDL_TEXTUREACCESS_TARGET, width, height);
 }
