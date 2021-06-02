@@ -3,13 +3,15 @@
 
 #include <algorithm>
 
-Node::Node(const std::string& name) :
+Node::Node(Renderer* renderer, const std::string& name) :
+    _renderer(renderer),
     _name(name),
     _destination(nullptr),
     _texture(nullptr)
 {}
 
-Node::Node(const std::string& name, SDL_Texture* texture, SDL_Rect* destination) : 
+Node::Node(Renderer* renderer, const std::string& name, SDL_Texture* texture, SDL_Rect* destination) : 
+    _renderer(renderer),
     _name(name),
     _destination(destination),
     _texture(texture)
@@ -111,9 +113,9 @@ Node* Node::findChild(const std::string& name)
     return nullptr;
 }
 
-bool Node::render(Renderer* renderer)
+bool Node::render()
 {
-    if(renderer == nullptr)
+    if(_renderer == nullptr)
     {
         logError("[Node] Cannot render texture for node " + _name + ", renderer = nullptr");
         return false;
@@ -128,7 +130,7 @@ bool Node::render(Renderer* renderer)
             _destination->y += _parent->getY();
         }
 
-        if(!renderer->renderTexture(_texture, _destination))
+        if(!_renderer->renderTexture(_texture, _destination))
         {
             logError("[Node] Failed to render " + _name);
             return false;
@@ -141,7 +143,7 @@ bool Node::render(Renderer* renderer)
         }
     }
 
-    if(!this->renderChildren(renderer))
+    if(!this->renderChildren())
     {
         logError("[Node] " + _name + " : failed to render one or more children.");
         return false;
@@ -150,13 +152,21 @@ bool Node::render(Renderer* renderer)
     return true;
 }
 
-bool Node::renderChildren(Renderer* renderer)
+bool Node::renderChildren()
 {
     bool ok = true;
     for(Node* child : _children)
     {
-        if(!child->render(renderer))
+        if(!child->render())
             ok = false;
     }
     return ok;
+}
+
+void Node::setRenderer(Renderer* renderer)
+{
+    if(renderer != nullptr)
+    {
+        _renderer = renderer;
+    }
 }

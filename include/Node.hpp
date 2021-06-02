@@ -16,9 +16,9 @@ class Node
 {
     public:
 
-    Node(const std::string& name);
+    Node(Renderer* renderer, const std::string& name);
 
-    Node(const std::string& name, SDL_Texture* texture, SDL_Rect* destination = nullptr);
+    Node(Renderer* renderer, const std::string& name, SDL_Texture* texture, SDL_Rect* destination = nullptr);
 
     ~Node();
 
@@ -65,22 +65,19 @@ class Node
     //===============
 
     /**
-     * @brief Render this node.
-     * Render all children as well.
+     * @brief Render this node and its children.
      * 
-     * @param renderer Renderer to render into.
      * @return Ok or not.
      */
-    bool render(Renderer* renderer);
+    bool render();
 
     private:
     /**
      * @brief Render all children.
      * 
-     * @param renderer Renderer to render into.
      * @return Ok or not.
      */
-    bool renderChildren(Renderer* renderer);
+    bool renderChildren();
 
     public:
 
@@ -89,14 +86,13 @@ class Node
     // Getters
     //===============
 
+    Renderer* getRenderer() { return _renderer; }
     std::string getName() { return _name; }
-
     SDL_Rect* getDestination() { return _destination; }
     int getWidth() { return _destination->w; }
     int getHeight() { return _destination->h; }
     int getX() {return _destination->x; }
     int getY() { return _destination->y; }
-
     SDL_Texture* getTexture() { return _texture; }
     std::vector<Node*> getChildren() { return _children; }
     Node* getParent() { return _parent; }
@@ -106,14 +102,20 @@ class Node
     // Setters
     //===============
 
-    void setName(std::string name) { _name = name; }
+    /**
+     * @brief Set the Renderer object.
+     * No effect if renderer == nullptr.
+     * 
+     * @param renderer 
+     */
+    void setRenderer(Renderer* renderer);
 
+    void setName(std::string name) { _name = name; }
     void setDestination(SDL_Rect* dst) { _destination = dst; }
     void setWidth(int width) { _destination->w = width; }
     void setHeight(int height) { _destination->h = height; }
     void setX(int x) { _destination->x = x; }
     void setY(int y) { _destination->y = y; }
-
     void setTexture(SDL_Texture* texture) { _texture = texture;}
 
     private:
@@ -125,6 +127,7 @@ class Node
     //===============
 
     private:
+    Renderer* _renderer;
     std::string _name;
     SDL_Rect* _destination;
     SDL_Texture* _texture;

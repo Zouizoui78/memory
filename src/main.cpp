@@ -24,7 +24,7 @@ int main(int argc, char*argv[])
     dst->x = 0;
     dst->y = 0;
     r.cropTexture(cards, cardTexture, dst);
-    Node* card = new Node("card", cardTexture, dst);
+    Node* card = new Node(&r, "card", cardTexture, dst);
     
     SDL_Texture* cardTexture2;
     SDL_Rect* dst2= new SDL_Rect;
@@ -37,23 +37,23 @@ int main(int argc, char*argv[])
     dst2->w = 69;
     dst2->x = r.getWidth() / 2 - 94 / 2;
     dst2->y = r.getHeight() / 2 - 69 / 2;
-    Node* card2 = new Node("card2", cardTexture2, dst2);
+    Node* card2 = new Node(&r, "card2", cardTexture2, dst2);
 
     SDL_Rect* dst3 = new SDL_Rect;
     dst3->h = r.getHeight() / 2;
     dst3->w = r.getWidth() / 2;
     dst3->x = 0;
     dst3->y = 0;
-    Node* parent = new Node("parent");
+    Node* parent = new Node(&r, "parent");
     parent->addChild(card);
     parent->addChild(card2);
-    parent->render(&r);
+    parent->render();
 
     dst3->x = r.getWidth() / 2;
     dst3->y = r.getHeight() / 2;
     parent->setTexture(background);
     parent->setDestination(dst3);
-    parent->render(&r);
+    parent->render();
 
     r.refresh();
 
@@ -77,7 +77,7 @@ int main(int argc, char*argv[])
                 {
                     r.clear();
                     parent->removeChild("card");
-                    parent->render(&r);
+                    parent->render();
                     r.refresh();
                 }
             }
