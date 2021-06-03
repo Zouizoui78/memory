@@ -1,7 +1,12 @@
 #include "Logger.hpp"
 #include "Renderer.hpp"
-
 #include "TextField.hpp"
+#include "MouseHandler.hpp"
+
+void callbackTest()
+{
+    logInfo("Click !");
+}
 
 int main(int argc, char*argv[])
 {
@@ -13,6 +18,8 @@ int main(int argc, char*argv[])
     {
         return -1;
     }
+    
+    MouseHandler mouseHandler;
 
     SDL_Texture* cards = r.loadImage("res/cards.bmp");
     SDL_Texture* background = r.loadImage("res/background.bmp");
@@ -65,36 +72,46 @@ int main(int argc, char*argv[])
     TextField* button = new TextField(&r, "button", "Bouton");
     menu->addChild(button);
 
+    card->setClickable(true);
+    mouseHandler.addSubscriber(card);
+    card2->setClickable(true);
+    card2->setClickCallback(&callbackTest);
+    mouseHandler.addSubscriber(card2);
+
     //Main loop.
     while(!quit)
     {
         //Event loop.
         while(SDL_PollEvent(&event) != 0)
         {
-            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
             {
+                logInfo("closing");
                 quit = true;
             }
-            else if(event.type == SDL_KEYDOWN)
-            {
-                if(event.key.keysym.sym == SDLK_RETURN)
-                {
-                    quit = true;
-                }
-                if(event.key.keysym.sym == SDLK_SPACE)
-                {
-                    r.clear();
-                    board->removeChild("card");
-                    menu->addChild(card);
 
-                    text->setText("zoui aime popo le bg", font);
+            mouseHandler.mouseEventHandler(event);
+            // else if(event.type == SDL_KEYDOWN)
+            // {
+            //     if(event.key.keysym.sym == SDLK_RETURN)
+            //     {
+            //         quit = true;
+            //     }
+            //     if(event.key.keysym.sym == SDLK_SPACE)
+            //     {
+            //         r.clear();
+            //         board->removeChild("card");
+            //         menu->addChild(card);
+            //         card2->setVisible(false);
+
+            //         text->setText("zoui aime popo le bg", font);
                     
-                    // Change cursor
-                    SDL_Cursor* cursor;
-                    cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
-                    SDL_SetCursor(cursor);
-                }
-            }
+            //         // Change cursor
+            //         SDL_Cursor* cursor;
+            //         cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+            //         SDL_SetCursor(cursor);
+            //     }
+            // }
         
             board->render();
             menu->render();
