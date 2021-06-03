@@ -79,7 +79,7 @@ class Renderer
      * @param size Point size to load the font fe.
      * @return TTF_Font* nullptr if error.
      */
-    TTF_Font* loadFont(const std::string& fontPath, int size);
+    TTF_Font* loadFont(std::string fontPath, int size);
 
     /**
      * @brief Load an image into a texture.
@@ -87,7 +87,7 @@ class Renderer
      * @param imgPath Path to the image to load.
      * @return texture or nullptr on error.
      */
-    SDL_Texture* loadImage(const std::string& imgPath);
+    SDL_Texture* loadImage(std::string imgPath);
 
     /**
      * @brief Create a texture from a text.
@@ -98,7 +98,7 @@ class Renderer
      * @return texture or nullptr on error.
      */
     SDL_Texture* loadText(
-        const std::string& text,
+        std::string text,
         SDL_Color color = { 255, 255, 255, 255 },
         TTF_Font* font = nullptr
     );

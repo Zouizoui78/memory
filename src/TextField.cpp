@@ -1,21 +1,7 @@
 #include "TextField.hpp"
 #include "Logger.hpp"
 
-TextField::TextField(Renderer* renderer, const std::string& name) :
-    Node(renderer, name),
-    _defaultFont(nullptr)
-{
-    _text = "";
-
-    _defaultColor.a = 255;
-    _defaultColor.r = 255;
-    _defaultColor.g = 255;
-    _defaultColor.b = 255;
-
-    this->initializeDestination();
-}
-
-TextField::TextField(Renderer* renderer, const std::string& name, const std::string& text, TTF_Font* font) :
+TextField::TextField(Renderer* renderer, std::string name, std::string text, TTF_Font* font) :
     Node(renderer, name),
     _defaultFont(nullptr)
 {
@@ -32,7 +18,7 @@ TextField::TextField(Renderer* renderer, const std::string& name, const std::str
 TextField::~TextField() {}
 
 bool TextField::setText(
-    const std::string& text,
+    std::string text,
     TTF_Font* font,
     SDL_Color color
 )

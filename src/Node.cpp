@@ -3,14 +3,14 @@
 
 #include <algorithm>
 
-Node::Node(Renderer* renderer, const std::string& name) :
+Node::Node(Renderer* renderer, std::string name) :
     _renderer(renderer),
     _name(name),
     _destination(nullptr),
     _texture(nullptr)
 {}
 
-Node::Node(Renderer* renderer, const std::string& name, SDL_Texture* texture, SDL_Rect* destination) : 
+Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect* destination) : 
     _renderer(renderer),
     _name(name),
     _destination(destination),
@@ -65,9 +65,8 @@ bool Node::removeChild(Node* child)
     auto search = std::find(_children.begin(), _children.end(), child);
     if(search != _children.end())
     {
-        delete *search;
         _children.erase(search);
-        logInfo("[Node] Removed child " + name + " from " + _name);
+        logInfo("[Node] Removed child from " + _name + " : " + name);
         return true;
     }
     else
@@ -77,7 +76,7 @@ bool Node::removeChild(Node* child)
     }
 }
 
-bool Node::removeChild(const std::string& name)
+bool Node::removeChild(std::string name)
 {
     if(name.empty())
     {
@@ -97,7 +96,7 @@ bool Node::removeChild(const std::string& name)
     }
 }
 
-Node* Node::findChild(const std::string& name)
+Node* Node::findChild(std::string name)
 {
     if(name.empty())
     {

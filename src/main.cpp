@@ -85,14 +85,21 @@ int main(int argc, char*argv[])
                 {
                     r.clear();
                     board->removeChild("card");
-                    board->removeChild("text");
+                    menu->addChild(card);
+
+                    text->setText("zoui aime popo le bg", font);
+                    
+                    // Change cursor
+                    SDL_Cursor* cursor;
+                    cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+                    SDL_SetCursor(cursor);
                 }
             }
-        }
         
-        board->render();
-        menu->render();
-        r.refresh();
+            board->render();
+            menu->render();
+            r.refresh();
+        }
         SDL_Delay(20);
     }
 

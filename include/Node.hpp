@@ -16,9 +16,9 @@ class Node
 {
     public:
 
-    Node(Renderer* renderer, const std::string& name);
+    Node(Renderer* renderer, std::string name);
 
-    Node(Renderer* renderer, const std::string& name, SDL_Texture* texture, SDL_Rect* destination = nullptr);
+    Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect* destination = nullptr);
 
     ~Node();
 
@@ -36,7 +36,8 @@ class Node
     bool addChild(Node* child);
 
     /**
-     * @brief Find a child by pointer and remove it.
+     * @brief Remove a child from the vector.
+     * Does not call the child's destructor !
      * 
      * @param child
      * @return Ok or not.
@@ -44,12 +45,12 @@ class Node
     bool removeChild(Node* child);
 
     /**
-     * @brief Find a child by name and remove it.
+     * @brief Remove child by name.
      * 
      * @param name
      * @return Ok or not.
      */
-    bool removeChild(const std::string& name);
+    bool removeChild(std::string name);
 
     /**
      * @brief Search for a child by name.
@@ -57,7 +58,7 @@ class Node
      * @param name Name of the child to look for.
      * @return Pointer to the child or nullptr if not found.
      */
-    Node* findChild(const std::string& name);
+    Node* findChild(std::string name);
 
 
     //===============

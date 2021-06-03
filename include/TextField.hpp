@@ -8,9 +8,7 @@ class TextField : public Node
 {
     public:
 
-    TextField(Renderer* renderer, const std::string& name);
-
-    TextField(Renderer* renderer, const std::string& name, const std::string& text, TTF_Font* font = nullptr);
+    TextField(Renderer* renderer, std::string name, std::string text, TTF_Font* font = nullptr);
 
     ~TextField();
 
@@ -31,7 +29,7 @@ class TextField : public Node
      * @return Ok or not.
      */
     bool setText(
-        const std::string& text,
+        std::string text,
         TTF_Font* font = nullptr,
         SDL_Color color = { 255, 255, 255, 255 }
     );

@@ -129,7 +129,7 @@ bool Renderer::setDrawColor(SDL_Color& color)
     return true;    
 }
 
-TTF_Font* Renderer::loadFont(const std::string& fontPath, int size)
+TTF_Font* Renderer::loadFont(std::string fontPath, int size)
 {
     TTF_Font* font = TTF_OpenFont(fontPath.c_str(), size);
     if(font == nullptr)
@@ -137,7 +137,7 @@ TTF_Font* Renderer::loadFont(const std::string& fontPath, int size)
     return font;
 }
 
-SDL_Texture* Renderer::loadImage(const std::string& imgPath)
+SDL_Texture* Renderer::loadImage(std::string imgPath)
 {
     if(imgPath.empty())
     {
@@ -164,7 +164,7 @@ SDL_Texture* Renderer::loadImage(const std::string& imgPath)
 }
 
 SDL_Texture* Renderer::loadText(
-    const std::string& text,
+    std::string text,
     SDL_Color color,
     TTF_Font* font
 )
