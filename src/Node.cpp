@@ -199,7 +199,7 @@ void Node::setY(int y)
     _destination->y = y;
 }
 
-void Node::initialize_destination()
+void Node::initializeDestination()
 {
     if(_destination != nullptr)
     {

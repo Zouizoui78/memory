@@ -12,7 +12,7 @@ TextField::TextField(Renderer* renderer, const std::string& name) :
     _defaultColor.g = 255;
     _defaultColor.b = 255;
 
-    _destination = new SDL_Rect;
+    this->initializeDestination();
 }
 
 TextField::TextField(Renderer* renderer, const std::string& name, const std::string& text, TTF_Font* font) :
@@ -24,7 +24,7 @@ TextField::TextField(Renderer* renderer, const std::string& name, const std::str
     _defaultColor.g = 255;
     _defaultColor.b = 255;
 
-    _destination = new SDL_Rect;
+    this->initializeDestination();
 
     this->setText(text, font);
 }

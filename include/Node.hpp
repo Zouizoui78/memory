@@ -126,7 +126,7 @@ class Node
     // Others
     //===============
     public:
-    void initialize_destination();
+    void initializeDestination();
 
 
     //===============
