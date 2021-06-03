@@ -39,6 +39,10 @@ Node::~Node()
 }
 
 
+//===============
+// Children
+//===============
+
 bool Node::addChild(Node* child)
 {
     if(child == nullptr)
@@ -112,6 +116,11 @@ Node* Node::findChild(std::string name)
     return nullptr;
 }
 
+
+//===============
+// Rendering
+//===============
+
 bool Node::render()
 {
     if(_renderer == nullptr)
@@ -119,6 +128,9 @@ bool Node::render()
         logError("[Node] Cannot render texture for node " + _name + ", renderer = nullptr");
         return false;
     }
+
+    if(!_visible)
+        return true;
 
     if(_texture != nullptr)
     {
@@ -162,6 +174,11 @@ bool Node::renderChildren()
     return ok;
 }
 
+
+//===============
+// Setters
+//===============
+
 void Node::setRenderer(Renderer* renderer)
 {
     if(renderer != nullptr)
@@ -197,6 +214,33 @@ void Node::setY(int y)
         _destination = new SDL_Rect();
     _destination->y = y;
 }
+
+
+//===============
+// Inputs
+//===============
+
+void Node::click()
+{
+    if(!_clickable)
+    {
+        logError("[Node] " + _name + " clicked but not set as clickable.");
+    }
+    else if(_click == nullptr)
+    {
+        logWarning("[Node] " + _name + " clicked but no callback registered.");
+    }
+    else
+    {
+        logInfo("[Node] " + _name + " clicked.");
+        _click();
+    }
+}
+
+
+//===============
+// Others
+//===============
 
 void Node::initializeDestination()
 {

@@ -98,6 +98,24 @@ class Node
     std::vector<Node*> getChildren() { return _children; }
     Node* getParent() { return _parent; }
 
+    /**
+     * @brief Get whether this object is visible or not.
+     * An invisible object and its children are not rendered.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool isVisible() { return _visible; }
+
+    /**
+     * @brief Get whether this object will react
+     * to input mouse events or not.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool isClickable() { return _clickable; }
+
 
     //===============
     // Setters
@@ -118,9 +136,19 @@ class Node
     void setX(int x);
     void setY(int y);
     void setTexture(SDL_Texture* texture) { _texture = texture;}
+    void setVisible(bool visible) { _visible = visible; }
+    void setClickable(bool clickable) { _clickable = clickable; }
+    void setClickCallback(void (*click)()) { _click = click; }
 
     private:
     void setParent(Node* parent) { _parent = parent; }
+
+
+    //===============
+    // Inputs
+    //===============
+    public:
+    void click();
 
 
     //===============
@@ -141,6 +169,9 @@ class Node
     SDL_Texture* _texture;
     std::vector<Node*> _children;
     Node* _parent = nullptr;
+    bool _visible = true;
+    bool _clickable = false;
+    void (*_click)() = nullptr;
 };
 
 #endif // NODE
