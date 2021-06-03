@@ -123,7 +123,7 @@ bool Node::render()
 
     if(_texture != nullptr)
     {
-        bool relative = _parent != nullptr && _destination != nullptr && _parent->getDestination() != nullptr;
+        bool relative = _parent != nullptr && _parent->getDestination() != nullptr;
         if(relative)
         {
             _destination->x += _parent->getX();
@@ -197,4 +197,19 @@ void Node::setY(int y)
     if(_destination == nullptr)
         _destination = new SDL_Rect();
     _destination->y = y;
+}
+
+void Node::initialize_destination()
+{
+    if(_destination != nullptr)
+    {
+        delete _destination;
+        _destination = nullptr;
+    }
+
+    _destination = new SDL_Rect;
+    _destination->h = 0;
+    _destination->w = 0;
+    _destination->x = 0;
+    _destination->y = 0;
 }
