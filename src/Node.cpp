@@ -170,3 +170,31 @@ void Node::setRenderer(Renderer* renderer)
         _renderer = renderer;
     }
 }
+
+void Node::setWidth(int width)
+{
+    if(_destination == nullptr)
+        _destination = new SDL_Rect();
+    _destination->w = width;
+}
+
+void Node::setHeight(int height)
+{
+    if(_destination == nullptr)
+        _destination = new SDL_Rect();
+    _destination->h = height;
+}
+
+void Node::setX(int x)
+{
+    if(_destination == nullptr)
+        _destination = new SDL_Rect();
+    _destination->x = x;
+}
+
+void Node::setY(int y)
+{
+    if(_destination == nullptr)
+        _destination = new SDL_Rect();
+    _destination->y = y;
+}

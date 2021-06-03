@@ -112,10 +112,10 @@ class Node
 
     void setName(std::string name) { _name = name; }
     void setDestination(SDL_Rect* dst) { _destination = dst; }
-    void setWidth(int width) { _destination->w = width; }
-    void setHeight(int height) { _destination->h = height; }
-    void setX(int x) { _destination->x = x; }
-    void setY(int y) { _destination->y = y; }
+    void setWidth(int width);
+    void setHeight(int height);
+    void setX(int x);
+    void setY(int y);
     void setTexture(SDL_Texture* texture) { _texture = texture;}
 
     private:
@@ -126,7 +126,7 @@ class Node
     // Attributes
     //===============
 
-    private:
+    protected:
     Renderer* _renderer;
     std::string _name;
     SDL_Rect* _destination;
