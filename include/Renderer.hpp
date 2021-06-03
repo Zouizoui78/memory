@@ -44,6 +44,8 @@ class Renderer
 
     int getHeight() { return _height; }
 
+    TTF_Font* getDefaultFont() { return _default_font; }
+
     SDL_Texture* getRenderTarget();
     bool setRenderTarget(SDL_Texture* dst);
 
@@ -69,6 +71,15 @@ class Renderer
      * @return Ok or not.
      */
     bool setDrawColor(SDL_Color& color);
+
+    /**
+     * @brief Load a font.
+     * 
+     * @param fontPath Path to the font to load.
+     * @param size Point size to load the font fe.
+     * @return TTF_Font* nullptr if error.
+     */
+    TTF_Font* loadFont(const std::string& fontPath, int size);
 
     /**
      * @brief Load an image into a texture.

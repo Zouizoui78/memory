@@ -17,7 +17,7 @@ bool Renderer::init()
 
     if(TTF_Init() != 0)
     {
-        logError("[Renderer] Failed to load TTF.");
+        logError("[Renderer] Failed to initialize TTF.");
         return false;
     }
 
@@ -129,6 +129,14 @@ bool Renderer::setDrawColor(SDL_Color& color)
     return true;    
 }
 
+TTF_Font* Renderer::loadFont(const std::string& fontPath, int size)
+{
+    TTF_Font* font = TTF_OpenFont(fontPath.c_str(), size);
+    if(font == nullptr)
+        logError("Unable to load font.");
+    return font;
+}
+
 SDL_Texture* Renderer::loadImage(const std::string& imgPath)
 {
     if(imgPath.empty())
@@ -188,7 +196,8 @@ SDL_Texture* Renderer::loadText(
         logError("[Renderer] Failed to create texture from image.");
         return nullptr;
     }
-    logInfo("[Renderer] Text '" + text + "' rendered.");
+    
+    logInfo("[Renderer] Text '" + text + "' loaded.");
     return texture;
 }
 
