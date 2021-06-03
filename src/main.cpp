@@ -1,7 +1,7 @@
 #include "Logger.hpp"
 #include "Renderer.hpp"
 
-#include "Node.hpp"
+#include "TextField.hpp"
 
 int main(int argc, char*argv[])
 {
@@ -16,6 +16,9 @@ int main(int argc, char*argv[])
 
     SDL_Texture* cards = r.loadImage("res/cards.bmp");
     SDL_Texture* background = r.loadImage("res/background.bmp");
+    
+    TTF_Font* font = r.loadFont("res/olivier.ttf", 90);
+    r.setDefaultFont(font);
     
     SDL_Texture* cardTexture;
     SDL_Rect* dst = new SDL_Rect;
@@ -45,21 +48,26 @@ int main(int argc, char*argv[])
     dst3->x = 0;
     dst3->y = 0;
     Node* parent = new Node(&r, "parent");
+    parent->setTexture(background);
     parent->addChild(card);
     parent->addChild(card2);
+
+    TextField* text = new TextField(&r, "text", "prout");
+    text->setX(100);
+    text->setY(200);
+    parent->addChild(text);
     parent->render();
 
     dst3->x = r.getWidth() / 2;
     dst3->y = r.getHeight() / 2;
-    parent->setTexture(background);
     parent->setDestination(dst3);
-    parent->render();
+    text->setText("Ceci est un test !");
 
+    parent->render();
     r.refresh();
 
     //Main loop.
     while(!quit){
-
         //Event loop.
         while(SDL_PollEvent(&event) != 0)
         {
@@ -77,6 +85,7 @@ int main(int argc, char*argv[])
                 {
                     r.clear();
                     parent->removeChild("card");
+                    parent->removeChild("text");
                     parent->render();
                     r.refresh();
                 }
@@ -88,6 +97,7 @@ int main(int argc, char*argv[])
     //Quit SDL.
     delete parent;
     logInfo("[Main] Parent removed.");
+    TTF_CloseFont(font);
     SDL_DestroyTexture(cards);
     r.stop();
     logInfo("[Main] Game closed.");
