@@ -224,15 +224,14 @@ void Node::click()
 {
     if(!_clickable)
     {
-        logError("[Node] " + _name + " clicked but not set as clickable.");
+        logError("[Node] " + _name + " registered a click but is not set as clickable.");
     }
     else if(_click == nullptr)
     {
-        logWarning("[Node] " + _name + " clicked but no callback registered.");
+        logWarning("[Node] " + _name + " clicked but no callback is registered.");
     }
     else
     {
-        logInfo("[Node] " + _name + " clicked.");
         _click();
     }
 }

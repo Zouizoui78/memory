@@ -3,7 +3,6 @@
 
 MouseHandler::MouseHandler()
 {
-    logInfo("salut");
     _normalCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     _handCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 }
@@ -15,6 +14,7 @@ MouseHandler::~MouseHandler()
 
 void MouseHandler::mouseEventHandler(SDL_Event event)
 {
+    // TODO : Don't use events to handle mouse movements.
     if(event.type == SDL_MOUSEMOTION)
         this->mouseMotion(event);
     else if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
@@ -41,9 +41,10 @@ void MouseHandler::mouseMotion(SDL_Event event)
         event.button.x,
         event.button.y
     };
+
     for(auto node : _subscribers)
     {
-        if(SDL_PointInRect(&cursor_pos, node->getDestination()) && node->isClickable())
+        if(node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, node->getDestination()))
         {
             hover = true;
             if(_hoveredNode != node)
@@ -72,6 +73,7 @@ void MouseHandler::mouseClick()
     }
     else
     {
+        logInfo("[MouseHandler] " + _hoveredNode->getName() + " clicked.");
         _hoveredNode->click();
     }
 }

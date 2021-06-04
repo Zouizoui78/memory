@@ -84,10 +84,18 @@ int main(int argc, char*argv[])
         //Event loop.
         while(SDL_PollEvent(&event) != 0)
         {
-            if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+            r.clear();
+            if(event.type == SDL_KEYDOWN)
             {
-                logInfo("closing");
-                quit = true;
+                if(event.key.keysym.sym == SDLK_ESCAPE)
+                {
+                    logInfo("closing");
+                    quit = true;
+                }
+                else if(event.key.keysym.sym == SDLK_SPACE)
+                {
+                    card2->setVisible(!card2->isVisible());
+                }
             }
 
             mouseHandler.mouseEventHandler(event);
