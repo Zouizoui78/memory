@@ -18,7 +18,15 @@ class Node
 
     Node(Renderer* renderer, std::string name);
 
-    Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect* destination = nullptr);
+    Node(
+        Renderer* renderer,
+        std::string name,
+        SDL_Texture* texture,
+        SDL_Rect destination =
+        {
+            0, 0, 0, 0
+        }
+    );
 
     ~Node();
 
@@ -89,11 +97,11 @@ class Node
 
     Renderer* getRenderer() { return _renderer; }
     std::string getName() { return _name; }
-    SDL_Rect* getDestination() { return _destination; }
-    int getWidth() { return _destination->w; }
-    int getHeight() { return _destination->h; }
-    int getX() {return _destination->x; }
-    int getY() { return _destination->y; }
+    SDL_Rect getDestination() { return _destination; }
+    int getWidth() { return _destination.w; }
+    int getHeight() { return _destination.h; }
+    int getX() {return _destination.x; }
+    int getY() { return _destination.y; }
     SDL_Texture* getTexture() { return _texture; }
     std::vector<Node*> getChildren() { return _children; }
     Node* getParent() { return _parent; }
@@ -130,7 +138,7 @@ class Node
     void setRenderer(Renderer* renderer);
 
     void setName(std::string name) { _name = name; }
-    void setDestination(SDL_Rect* dst) { _destination = dst; }
+    void setDestination(SDL_Rect dst) { _destination = dst; }
     void setWidth(int width);
     void setHeight(int height);
     void setX(int x);
@@ -165,7 +173,7 @@ class Node
     protected:
     Renderer* _renderer;
     std::string _name;
-    SDL_Rect* _destination;
+    SDL_Rect _destination;
     SDL_Texture* _texture;
     std::vector<Node*> _children;
     Node* _parent = nullptr;

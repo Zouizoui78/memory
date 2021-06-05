@@ -57,7 +57,8 @@ void MouseHandler::motion()
     SDL_GetMouseState(&(cursor_pos.x), &(cursor_pos.y));
     for(auto node : _subscribers)
     {
-        if(node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, node->getDestination()))
+        SDL_Rect dest = node->getDestination();
+        if(node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, &dest))
         {
             hover = true;
             if(_hoveredNode != node)

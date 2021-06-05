@@ -6,36 +6,30 @@
 Node::Node(Renderer* renderer, std::string name) :
     _renderer(renderer),
     _name(name),
-    _destination(nullptr),
     _texture(nullptr)
-{}
+{
+    this->initializeDestination();
+    logInfo("[Node] Instanciated node " + _name);
+}
 
-Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect* destination) : 
+Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect destination) : 
     _renderer(renderer),
     _name(name),
     _destination(destination),
     _texture(texture)
-{}
+{
+    logInfo("[Node] Instanciated node " + _name);
+}
 
 Node::~Node()
 {
-    if(_destination != nullptr)
-    {
-        delete _destination;
-    }
-
-    if(_texture != nullptr)
-    {
-        SDL_DestroyTexture(_texture);
-    }
-
     for(Node* child : _children)
     {
         delete child;
     }
     _children.clear();
 
-    logInfo("[Node] Node " + _name + " freed.");
+    logInfo("[Node] Removed node " + _name);
 }
 
 
@@ -134,23 +128,28 @@ bool Node::render()
 
     if(_texture != nullptr)
     {
-        bool relative = _parent != nullptr && _parent->getDestination() != nullptr;
-        if(relative)
+        if(_parent != nullptr)
         {
-            _destination->x += _parent->getX();
-            _destination->y += _parent->getY();
+            _destination.x += _parent->getX();
+            _destination.y += _parent->getY();
         }
 
-        if(!_renderer->renderTexture(_texture, _destination))
+        SDL_Rect* rect;
+        if(_destination.h == 0 && _destination .w == 0 && _destination .x == 0 && _destination.y == 0)
+            rect = nullptr;
+        else
+            rect = &_destination;
+
+        if(!_renderer->renderTexture(_texture, rect))
         {
             logError("[Node] Failed to render " + _name);
             return false;
         }
 
-        if(relative)
+        if(_parent != nullptr)
         {
-            _destination->x -= _parent->getX();
-            _destination->y -= _parent->getY();
+            _destination.x -= _parent->getX();
+            _destination.y -= _parent->getY();
         }
     }
 
@@ -189,30 +188,22 @@ void Node::setRenderer(Renderer* renderer)
 
 void Node::setWidth(int width)
 {
-    if(_destination == nullptr)
-        _destination = new SDL_Rect();
-    _destination->w = width;
+    _destination.w = width;
 }
 
 void Node::setHeight(int height)
 {
-    if(_destination == nullptr)
-        _destination = new SDL_Rect();
-    _destination->h = height;
+    _destination.h = height;
 }
 
 void Node::setX(int x)
 {
-    if(_destination == nullptr)
-        _destination = new SDL_Rect();
-    _destination->x = x;
+    _destination.x = x;
 }
 
 void Node::setY(int y)
 {
-    if(_destination == nullptr)
-        _destination = new SDL_Rect();
-    _destination->y = y;
+    _destination.y = y;
 }
 
 
@@ -243,15 +234,8 @@ void Node::click()
 
 void Node::initializeDestination()
 {
-    if(_destination != nullptr)
-    {
-        delete _destination;
-        _destination = nullptr;
-    }
-
-    _destination = new SDL_Rect;
-    _destination->h = 0;
-    _destination->w = 0;
-    _destination->x = 0;
-    _destination->y = 0;
+    _destination.h = 0;
+    _destination.w = 0;
+    _destination.x = 0;
+    _destination.y = 0;
 }

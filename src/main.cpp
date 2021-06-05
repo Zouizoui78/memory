@@ -33,6 +33,7 @@ int main(int argc, char*argv[])
     {
         return -1;
     }
+    Node* root = new Node(&r, "root");
     
     MouseHandler mouseHandler;
 
@@ -59,18 +60,19 @@ int main(int argc, char*argv[])
     TTF_Font* font = r.loadFont("res/olivier.ttf", 60);
     r.setDefaultFont(font);
 
-    SDL_Rect* dst = new SDL_Rect;
-    dst->h = r.getHeight();
-    dst->w = r.getWidth() * 0.8;
-    dst->x = 0;
-    dst->y = 0;
+    SDL_Rect dst;
+    dst.h = r.getHeight();
+    dst.w = r.getWidth() * 0.8;
+    dst.x = 0;
+    dst.y = 0;
     Node* board = new Node(&r, "board", background, dst);
+    root->addChild(board);
 
-    SDL_Rect* cardDst = new SDL_Rect;
-    cardDst->h = 94;
-    cardDst->w = 69;
-    cardDst->x = 100;
-    cardDst->y = 100;
+    SDL_Rect cardDst;
+    cardDst.h = 94;
+    cardDst.w = 69;
+    cardDst.x = 100;
+    cardDst.y = 100;
     Card* card = new Card(&r, Card::DIAMONDS, Card::KING, deck[Card::DIAMONDS][Card::KING], cardDst);
     board->addChild(card);
     card->setClickable(true);
@@ -87,12 +89,14 @@ int main(int argc, char*argv[])
     text->setClickCallback(&textCallback);
     mouseHandler.addSubscriber(text);
 
-    SDL_Rect* menudst = new SDL_Rect;
-    menudst->h = r.getHeight();
-    menudst->w = r.getWidth();
-    menudst->x = r.getWidth() * 0.8;
-    menudst->y = 0;
+    SDL_Rect menudst;
+    menudst.h = r.getHeight();
+    menudst.w = r.getWidth();
+    menudst.x = r.getWidth() * 0.8;
+    menudst.y = 0;
     Node* menu = new Node(&r, "menu", nullptr, menudst);
+    root->addChild(menu);
+
     TextField* button = new TextField(&r, "button", "Bouton");
     menu->addChild(button);
 
@@ -128,27 +132,28 @@ int main(int argc, char*argv[])
         }
 
         mouseHandler.motion();
-        board->render();
-        menu->render();
+        root->render();
         r.refresh();
         SDL_Delay(100);
     }
 
     //Quit SDL.
-    delete board;
-    delete menu;
-    logInfo("[Main] Board removed.");
-    TTF_CloseFont(font);
+    delete root;
+
+    //Destroying textures
+    SDL_DestroyTexture(background);
     SDL_DestroyTexture(cardSpriteSheet);
-    // for (size_t i = 0; i < 4; i++)
-    // {
-    //     for (size_t j = 0; j < 13; j++)
-    //     {
-    //         SDL_DestroyTexture(deck[i][j]);
-    //     }
-    // }
+    for (size_t i = 0; i < 4; i++)
+    {
+        for (size_t j = 0; j < 13; j++)
+        {
+            SDL_DestroyTexture(deck[i][j]);
+        }
+    }
+    
+    TTF_CloseFont(font);
+
     r.stop();
     logInfo("[Main] Game closed.");
-
     return 0;
 }

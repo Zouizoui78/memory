@@ -36,7 +36,7 @@ class Card : public Node
         unsigned int suit,
         unsigned int rank,
         SDL_Texture* frontTexture,
-        SDL_Rect* destination
+        SDL_Rect destination
     );
 
     ~Card();

@@ -28,7 +28,7 @@ Card::Card(
     unsigned int suit,
     unsigned int rank,
     SDL_Texture* frontTexture,
-    SDL_Rect* destination
+    SDL_Rect destination
 ) :
     _suit(suit),
     _rank(rank),
