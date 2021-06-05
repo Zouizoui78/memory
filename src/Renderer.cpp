@@ -110,6 +110,7 @@ bool Renderer::setViewport(SDL_Rect* rect)
         logError("[Renderer] Failed to set viewport.");
         return false;
     }
+    logInfo("[Renderer] Set viewport to h = " + std::to_string(rect->h) + ", w = " + std::to_string(rect->w) + ", x = " + std::to_string(rect->x) + ", y = " + std::to_string(rect->y));
     return true;
 }
 
@@ -126,6 +127,7 @@ bool Renderer::setDrawColor(SDL_Color& color)
         logError("[Renderer] Failed to set draw color.");
         return false;
     }
+    logInfo("[Renderer] Set drawing color to h = " + std::to_string(color.r) + ", w = " + std::to_string(color.g) + ", x = " + std::to_string(color.b) + ", y = " + std::to_string(color.a));
     return true;    
 }
 
@@ -133,7 +135,9 @@ TTF_Font* Renderer::loadFont(std::string fontPath, int size)
 {
     TTF_Font* font = TTF_OpenFont(fontPath.c_str(), size);
     if(font == nullptr)
-        logError("Unable to load font.");
+        logError("[Renderer] Unable to load font.");
+    else
+        logInfo("[Renderer] Loaded font " + fontPath);
     return font;
 }
 
@@ -159,7 +163,7 @@ SDL_Texture* Renderer::loadImage(std::string imgPath)
         return nullptr;
     }
 
-    logInfo("[Renderer] Image " + imgPath + " loaded.");
+    logInfo("[Renderer] Loaded image " + imgPath);
     return texture;
 }
 
@@ -197,7 +201,7 @@ SDL_Texture* Renderer::loadText(
         return nullptr;
     }
     
-    logInfo("[Renderer] Text '" + text + "' loaded.");
+    logInfo("[Renderer] Loaded text '" + text);
     return texture;
 }
 
@@ -221,19 +225,19 @@ bool Renderer::cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect)
 {
     if(src == nullptr)
     {
-        logError("[Renderer] Cannot extract texture part, source = nullptr.");
+        logError("[Renderer] Cannot crop texture, source = nullptr.");
         return false;
     }
 
     if(rect == nullptr)
     {
-        logError("[Renderer] Cannot extract texture part, rectangle = nullptr.");
+        logError("[Renderer] Cannot crop texture, rectangle = nullptr.");
         return false;
     } 
 
     if(rect->h == 0 || rect->w == 0)
     {
-        logError("[Renderer] Cannot extract texture part, rectangle has either height or width at 0.");
+        logError("[Renderer] Cannot crop texture, rectangle has either height or width at 0.");
         return false;
     }
 
@@ -247,7 +251,7 @@ bool Renderer::cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect)
 
     if(!this->renderToTexture(src, dst, rect))
     {
-        logError("[Renderer] Failed to extract texture part.");
+        logError("[Renderer] Failed to crop texture.");
         return false;
     }
 
