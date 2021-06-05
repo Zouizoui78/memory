@@ -113,15 +113,16 @@ int main(int argc, char*argv[])
             {
                 if(event.key.keysym.sym == SDLK_ESCAPE)
                 {
-                    logInfo("closing");
+                    logInfo("[Main] Closing.");
                     quit = true;
                 }
                 else if(event.key.keysym.sym == SDLK_SPACE)
                 {
                     button->setText("space");
-                    board->removeChild("diamonds_king");
-                    delete card;
-                    mouseHandler.removeSubscriber(card);
+                    card->setVisible(!card->isVisible());
+                    // board->removeChild("diamonds_king");
+                    // delete card;
+                    // mouseHandler.removeSubscriber(card);
                 }
             }
         }

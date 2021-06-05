@@ -86,6 +86,6 @@ bool TextField::setText(
     this->setWidth(width);
     this->setHeight(height);
 
-    logInfo("[TextField] Set text for node " + _name + " to '" + _text + "'.");
+    logInfo("[TextField] Set text of node " + _name + " to '" + _text + "'.");
     return true;
 }

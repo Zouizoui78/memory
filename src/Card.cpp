@@ -25,8 +25,8 @@ std::vector<std::string> Card::_ranks = {
 
 Card::Card(  
     Renderer* renderer,
-    uint8_t suit,
-    uint8_t rank,
+    unsigned int suit,
+    unsigned int rank,
     SDL_Texture* frontTexture,
     SDL_Rect* destination
 ) :
@@ -69,7 +69,7 @@ void Card::flip()
     this->setRevealed(!this->getRevealed());
 }
 
-std::string Card::generateName(uint8_t suit, uint8_t rank)
+std::string Card::generateName(unsigned int suit, unsigned int rank)
 {
     return _suits[suit] + "_" + _ranks[rank];
 }
