@@ -10,13 +10,11 @@ class MouseHandler
     MouseHandler();
     ~MouseHandler();
 
-    void mouseEventHandler(SDL_Event event);
     bool addSubscriber(Node* node);
-    bool removeSubscribe(Node* node);
+    bool removeSubscriber(Node* node);
 
-    private:
-    void mouseMotion(SDL_Event event);
-    void mouseClick();
+    void motion();
+    void click();
 
     void normalCursor() { SDL_SetCursor(_normalCursor); }
     void handCursor() { SDL_SetCursor(_handCursor); }

@@ -81,10 +81,16 @@ int main(int argc, char*argv[])
     //Main loop.
     while(!quit)
     {
+        r.clear();
+
         //Event loop.
         while(SDL_PollEvent(&event) != 0)
         {
-            r.clear();
+            if( event.type == SDL_MOUSEBUTTONDOWN &&
+                event.button.button == SDL_BUTTON_LEFT)
+            {
+                mouseHandler.click();
+            }
             if(event.type == SDL_KEYDOWN)
             {
                 if(event.key.keysym.sym == SDLK_ESCAPE)
@@ -95,37 +101,18 @@ int main(int argc, char*argv[])
                 else if(event.key.keysym.sym == SDLK_SPACE)
                 {
                     card2->setVisible(!card2->isVisible());
+                    // board->removeChild(card2);
+                    // mouseHandler.removeSubscriber(card2);
+                    // delete card2;
                 }
             }
-
-            mouseHandler.mouseEventHandler(event);
-            // else if(event.type == SDL_KEYDOWN)
-            // {
-            //     if(event.key.keysym.sym == SDLK_RETURN)
-            //     {
-            //         quit = true;
-            //     }
-            //     if(event.key.keysym.sym == SDLK_SPACE)
-            //     {
-            //         r.clear();
-            //         board->removeChild("card");
-            //         menu->addChild(card);
-            //         card2->setVisible(false);
-
-            //         text->setText("zoui aime popo le bg", font);
-                    
-            //         // Change cursor
-            //         SDL_Cursor* cursor;
-            //         cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
-            //         SDL_SetCursor(cursor);
-            //     }
-            // }
-        
-            board->render();
-            menu->render();
-            r.refresh();
         }
-        SDL_Delay(20);
+
+        mouseHandler.motion();
+        board->render();
+        menu->render();
+        r.refresh();
+        SDL_Delay(100);
     }
 
     //Quit SDL.
