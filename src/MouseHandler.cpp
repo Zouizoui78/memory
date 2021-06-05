@@ -40,7 +40,7 @@ bool MouseHandler::removeSubscriber(Node* node)
     if(search != _subscribers.end())
     {
         _subscribers.erase(search);
-        logInfo("[MouseHandler] Removed subscriber " + name);
+        logInfo("[MouseHandler] Subscriber removed : " + name);
         return true;
     }
     else

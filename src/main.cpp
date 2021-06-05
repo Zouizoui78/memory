@@ -100,10 +100,10 @@ int main(int argc, char*argv[])
                 }
                 else if(event.key.keysym.sym == SDLK_SPACE)
                 {
-                    card2->setVisible(!card2->isVisible());
-                    // board->removeChild(card2);
-                    // mouseHandler.removeSubscriber(card2);
-                    // delete card2;
+                    // card2->setVisible(!card2->isVisible());
+                    board->removeChild(card2);
+                    mouseHandler.removeSubscriber(card2);
+                    delete card2;
                 }
             }
         }
