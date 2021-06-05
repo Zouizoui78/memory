@@ -3,9 +3,14 @@
 #include "TextField.hpp"
 #include "MouseHandler.hpp"
 
-void callbackTest()
+void callbackTest(Node* node)
 {
-    logInfo("Click !");
+    logInfo(node->getName() + " clicked !");
+}
+
+void textCallback(Node* node)
+{
+    ((TextField*)node)->setText("Clicked !");
 }
 
 int main(int argc, char*argv[])
@@ -62,6 +67,9 @@ int main(int argc, char*argv[])
     board->addChild(text);
     
     text->setText("Ceci est un test !", font);
+    text->setClickable(true);
+    text->setClickCallback(&textCallback);
+    mouseHandler.addSubscriber(text);
 
     SDL_Rect* menudst = new SDL_Rect;
     menudst->h = r.getHeight();

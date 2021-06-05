@@ -138,7 +138,7 @@ class Node
     void setTexture(SDL_Texture* texture) { _texture = texture;}
     void setVisible(bool visible) { _visible = visible; }
     void setClickable(bool clickable) { _clickable = clickable; }
-    void setClickCallback(void (*click)()) { _click = click; }
+    void setClickCallback(void (*click)(Node* node)) { _click = click; }
 
     private:
     void setParent(Node* parent) { _parent = parent; }
@@ -171,7 +171,7 @@ class Node
     Node* _parent = nullptr;
     bool _visible = true;
     bool _clickable = false;
-    void (*_click)() = nullptr;
+    void (*_click)(Node* node) = nullptr;
 };
 
 #endif // NODE

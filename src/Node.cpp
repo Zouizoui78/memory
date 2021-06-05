@@ -232,7 +232,7 @@ void Node::click()
     }
     else
     {
-        _click();
+        _click(this);
     }
 }
 
