@@ -201,7 +201,7 @@ SDL_Texture* Renderer::loadText(
         return nullptr;
     }
     
-    logInfo("[Renderer] Loaded text '" + text);
+    logInfo("[Renderer] Loaded text '" + text + "'");
     return texture;
 }
 
@@ -213,7 +213,7 @@ bool Renderer::renderTexture(SDL_Texture* texture, SDL_Rect* dst, SDL_Rect* port
         return false;
     }
 
-    if(!SDL_RenderCopy(_renderer, texture, portion, dst) == -1)
+    if(SDL_RenderCopy(_renderer, texture, portion, dst) == -1)
     {
         logError("[Renderer] Failed to render texture.");
         return false;
@@ -260,7 +260,7 @@ bool Renderer::cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect)
 
 bool Renderer::renderRectangle(SDL_Rect* rect)
 {
-    if(!SDL_RenderDrawRect(_renderer, rect) == -1)
+    if(SDL_RenderDrawRect(_renderer, rect) == -1)
     {
         logError("[Renderer] Failed to render rectangle.");
         return false;
