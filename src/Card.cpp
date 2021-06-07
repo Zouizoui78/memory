@@ -29,10 +29,10 @@ Card::Card(
     unsigned int rank,
     SDL_Texture* frontTexture
 ) :
+    Node(renderer, this->generateName(suit, rank), frontTexture),
     _suit(suit),
     _rank(rank),
-    _frontTexture(frontTexture),
-    Node(renderer, this->generateName(suit, rank), frontTexture)
+    _frontTexture(frontTexture)
 {}
 
 Card::~Card()
