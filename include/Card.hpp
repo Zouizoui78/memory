@@ -35,11 +35,15 @@ class Card : public Node
         Renderer* renderer,
         unsigned int suit,
         unsigned int rank,
-        SDL_Texture* frontTexture,
-        SDL_Rect destination
+        SDL_Texture* frontTexture
     );
 
     ~Card();
+
+
+    //===============
+    // Setters
+    //===============
 
     /**
      * @brief Set the Back Texture
@@ -48,6 +52,24 @@ class Card : public Node
      * @param texture Texture to use.
      */
     static bool setBackTexture(SDL_Texture* texture);
+
+    /**
+     * @brief Set revealed state and change texture
+     * if needed to reflect the card state.
+     * 
+     * @param revealed 
+     */
+    void setRevealed(bool revealed);
+
+
+    //===============
+    // Getters
+    //===============
+    
+    static unsigned int getCardHeight() { return _cardHeight; }
+    static unsigned int getCardWidth() { return _cardWidth; }
+    static std::string getSuitName(int suit) { return _suits[suit]; }
+    static std::string getRankName(int rank) { return _ranks[rank]; }
 
     /**
      * @brief Give the card key.
@@ -61,14 +83,6 @@ class Card : public Node
     unsigned int getRank() { return _rank; }
 
     bool getRevealed() { return _revealed; }
-
-    /**
-     * @brief Set revealed state and change texture
-     * if needed to reflect the card state.
-     * 
-     * @param revealed 
-     */
-    void setRevealed(bool revealed);
 
     /**
      * @brief Calls setRevealed() to flip the card.

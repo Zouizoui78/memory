@@ -27,13 +27,12 @@ Card::Card(
     Renderer* renderer,
     unsigned int suit,
     unsigned int rank,
-    SDL_Texture* frontTexture,
-    SDL_Rect destination
+    SDL_Texture* frontTexture
 ) :
     _suit(suit),
     _rank(rank),
     _frontTexture(frontTexture),
-    Node(renderer, this->generateName(suit, rank), frontTexture, destination)
+    Node(renderer, this->generateName(suit, rank), frontTexture)
 {}
 
 Card::~Card()
@@ -71,5 +70,5 @@ void Card::flip()
 
 std::string Card::generateName(unsigned int suit, unsigned int rank)
 {
-    return _suits[suit] + "_" + _ranks[rank];
+    return "card_" + _suits[suit] + "_" + _ranks[rank];
 }
