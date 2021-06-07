@@ -7,6 +7,13 @@ MouseHandler::MouseHandler()
 {
     _normalCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     _handCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+    _action_area = { 0, 0, 0, 0 };
+}
+
+MouseHandler::MouseHandler(SDL_Rect action_area) : _action_area(action_area)
+{
+    _normalCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    _handCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 }
 
 MouseHandler::~MouseHandler()
@@ -50,44 +57,55 @@ bool MouseHandler::removeSubscriber(Node* node)
     }
 }
 
+void MouseHandler::setActionArea(SDL_Rect action_area)
+{
+    _action_area = action_area;
+}
+
+SDL_Rect MouseHandler::getActionArea()
+{
+    return _action_area;
+}
+
 void MouseHandler::motion()
 {
     bool hover = false;
     SDL_Point cursor_pos;
     SDL_GetMouseState(&(cursor_pos.x), &(cursor_pos.y));
-    for(auto node : _subscribers)
+
+    if(SDL_RectEmpty(&_action_area) || SDL_PointInRect(&cursor_pos, &_action_area))
     {
-        SDL_Rect dest = node->getDestination();
-        if(node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, &dest))
+        for(auto node : _subscribers)
         {
-            hover = true;
-            if(_hoveredNode != node)
+            SDL_Rect dest = node->getGlobalDestination();
+            if(node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, &dest))
             {
-                logInfo("[MouseHandler] Hovering clickable node " + node->getName());
-                _hoveredNode = node;
+                hover = true;
+                if(_hoveredNode != node)
+                {
+                    logInfo("[MouseHandler] Hovering clickable node " + node->getName());
+                    _hoveredNode = node;
+                }
+                break;
             }
-            break;
         }
-    }
-    
-    if(hover)
-        this->handCursor();
-    else
-    {
-        this->normalCursor();
-        _hoveredNode = nullptr;
+        
+        if(hover)
+            this->handCursor();
+        else
+        {
+            this->normalCursor();
+            _hoveredNode = nullptr;
+        }
     }
 }
 
-void MouseHandler::click()
+void MouseHandler::normalCursor()
 {
-    if(_hoveredNode == nullptr)
-    {
-        logInfo("[MouseHandler] Click registered but cursor is not on a clickable element.");
-    }
-    else
-    {
-        logInfo("[MouseHandler] " + _hoveredNode->getName() + " clicked.");
-        _hoveredNode->click();
-    }
+    SDL_SetCursor(_normalCursor);
+}
+
+void MouseHandler::handCursor()
+{
+    SDL_SetCursor(_handCursor);
 }

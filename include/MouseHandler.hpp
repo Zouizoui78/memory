@@ -8,10 +8,14 @@ class MouseHandler
 {
     public:
     MouseHandler();
+    MouseHandler(SDL_Rect action_area);
     ~MouseHandler();
 
     bool addSubscriber(Node* node);
     bool removeSubscriber(Node* node);
+
+    void setActionArea(SDL_Rect action_area);
+    SDL_Rect getActionArea();
 
     /**
      * @brief Read current mouse cursor position
@@ -21,20 +25,32 @@ class MouseHandler
     void motion();
 
     /**
-     * @brief Calls the hovered object's (if any)
-     * click() method.
+     * @brief Calls the passed callback.
      * 
+     * @tparam T Type of the object holding the callback.
+     * @tparam TClicked Type of the clicked object.
+     * @param object Object holding the callback.
+     * @param callback Callback to call.
      */
-    void click();
+    template<class T, class TClicked>
+    void click(T* object, void (T::*callback)(TClicked* clicked))
+    {
+        object->callback((TClicked*)_hoveredNode);
+    }
 
-    void normalCursor() { SDL_SetCursor(_normalCursor); }
-    void handCursor() { SDL_SetCursor(_handCursor); }
+    void normalCursor();
+    void handCursor();
 
     private:
     std::vector<Node*> _subscribers;
     Node* _hoveredNode = nullptr;
     SDL_Cursor* _normalCursor;
     SDL_Cursor* _handCursor;
+
+    /**
+     * @brief Area in which this handler should be active.
+     */
+    SDL_Rect _action_area;
 };
 
 #endif // MOUSEHANDLER
