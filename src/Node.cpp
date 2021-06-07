@@ -53,12 +53,13 @@ bool Node::addChild(Node* child)
     }
 
     child->setParent(this);
+    child->_inTree = true;
     _children.push_back(child);
     logInfo("[Node] New child for " + _name + " : " + child->getName());
     return true;
 }
 
-bool Node::removeChild(Node* child)
+bool Node::removeChild(Node* child, bool deleteNode)
 {
     if(child == nullptr)
     {
@@ -70,6 +71,10 @@ bool Node::removeChild(Node* child)
     auto search = std::find(_children.begin(), _children.end(), child);
     if(search != _children.end())
     {
+        if(deleteNode)
+            delete *search;
+        else
+            (*search)->_inTree = false;
         _children.erase(search);
         logInfo("[Node] Removed child from " + _name + " : " + name);
         return true;
@@ -81,7 +86,7 @@ bool Node::removeChild(Node* child)
     }
 }
 
-bool Node::removeChild(std::string name)
+bool Node::removeChild(std::string name, bool deleteNode)
 {
     if(name.empty())
     {
@@ -92,7 +97,7 @@ bool Node::removeChild(std::string name)
     Node* child = this->findChild(name);
     if(child != nullptr)
     {
-        return this->removeChild(child);
+        return this->removeChild(child, deleteNode);
     }
     else
     {
@@ -196,6 +201,24 @@ SDL_Rect Node::getGlobalDestination()
         ret.y += _parent->getY();
         return ret;
     }
+}
+
+bool Node::isInTree()
+{
+    return _inTree;
+}
+
+bool Node::isVisible()
+{
+    if(_parent != nullptr)
+        return _parent->isVisible() && _visible;
+    
+    return _visible;
+}
+
+bool Node::isClickable()
+{
+    return _clickable;
 }
 
 

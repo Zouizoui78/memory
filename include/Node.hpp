@@ -48,17 +48,19 @@ class Node
      * Does not call the child's destructor !
      * 
      * @param child
+     * @param deleteNode whether the node is deleted (freed) or not.
      * @return Ok or not.
      */
-    bool removeChild(Node* child);
+    bool removeChild(Node* child, bool deleteNode = false);
 
     /**
      * @brief Remove child by name.
      * 
      * @param name
+     * @param deleteNode whether the node is deleted (freed) or not.
      * @return Ok or not.
      */
-    bool removeChild(std::string name);
+    bool removeChild(std::string name, bool deleteNode = false);
 
     /**
      * @brief Search for a child by name.
@@ -113,6 +115,7 @@ class Node
     SDL_Texture* getTexture() { return _texture; }
     std::vector<Node*> getChildren() { return _children; }
     Node* getParent() { return _parent; }
+    bool isInTree();
 
     /**
      * @brief Get whether this object is visible or not.
@@ -121,7 +124,7 @@ class Node
      * @return true 
      * @return false 
      */
-    bool isVisible() { return _visible; }
+    bool isVisible();
 
     /**
      * @brief Get whether this object will react
@@ -130,7 +133,7 @@ class Node
      * @return true 
      * @return false 
      */
-    bool isClickable() { return _clickable; }
+    bool isClickable();
 
 
     //===============
@@ -182,6 +185,7 @@ class Node
     SDL_Texture* _texture;
     std::vector<Node*> _children;
     Node* _parent = nullptr;
+    bool _inTree = false;
     bool _visible = true;
     bool _clickable = false;
 };
