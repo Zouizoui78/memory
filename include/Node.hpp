@@ -98,6 +98,14 @@ class Node
     Renderer* getRenderer() { return _renderer; }
     std::string getName() { return _name; }
     SDL_Rect getDestination() { return _destination; }
+
+    /**
+     * @brief Return this' destination relatively to renderer origin.
+     * 
+     * @return SDL_Rect 
+     */
+    SDL_Rect getGlobalDestination();
+
     int getWidth() { return _destination.w; }
     int getHeight() { return _destination.h; }
     int getX() {return _destination.x; }
@@ -141,22 +149,16 @@ class Node
     void setDestination(SDL_Rect dst) { _destination = dst; }
     void setWidth(int width);
     void setHeight(int height);
+    void setSize(int width, int height) { _destination.w = width; _destination.h = height; }
     void setX(int x);
     void setY(int y);
-    void setTexture(SDL_Texture* texture) { _texture = texture;}
+    void setOrigin(int x, int y) { _destination.x = x; _destination.y = y; }
+    void setTexture(SDL_Texture* texture) { _texture = texture; }
     void setVisible(bool visible) { _visible = visible; }
     void setClickable(bool clickable) { _clickable = clickable; }
-    void setClickCallback(void (*click)(Node* node)) { _click = click; }
 
     private:
     void setParent(Node* parent) { _parent = parent; }
-
-
-    //===============
-    // Inputs
-    //===============
-    public:
-    void click();
 
 
     //===============
@@ -164,6 +166,9 @@ class Node
     //===============
     public:
     void initializeDestination();
+
+    void centerX();
+    void centerY();
 
 
     //===============
@@ -179,7 +184,6 @@ class Node
     Node* _parent = nullptr;
     bool _visible = true;
     bool _clickable = false;
-    void (*_click)(Node* node) = nullptr;
 };
 
 #endif // NODE

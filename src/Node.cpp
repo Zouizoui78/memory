@@ -18,6 +18,13 @@ Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect 
     _destination(destination),
     _texture(texture)
 {
+    if(_texture != nullptr && SDL_RectEmpty(&_destination))
+    {
+        int w, h;
+        SDL_QueryTexture(_texture, nullptr, nullptr, &w, &h);
+        _destination.w = w;
+        _destination.h = h;
+    }
     logInfo("[Node] Instanciated node " + _name);
 }
 
@@ -135,7 +142,7 @@ bool Node::render()
         }
 
         SDL_Rect* rect;
-        if(_destination.h == 0 && _destination .w == 0 && _destination .x == 0 && _destination.y == 0)
+        if(SDL_RectEmpty(&_destination))
             rect = nullptr;
         else
             rect = &_destination;
@@ -175,6 +182,24 @@ bool Node::renderChildren()
 
 
 //===============
+// Getters
+//===============
+
+SDL_Rect Node::getGlobalDestination()
+{
+    if(_parent == nullptr)
+        return _destination;
+    else
+    {
+        SDL_Rect ret = _destination;
+        ret.x += _parent->getX();
+        ret.y += _parent->getY();
+        return ret;
+    }
+}
+
+
+//===============
 // Setters
 //===============
 
@@ -208,27 +233,6 @@ void Node::setY(int y)
 
 
 //===============
-// Inputs
-//===============
-
-void Node::click()
-{
-    if(!_clickable)
-    {
-        logError("[Node] " + _name + " registered a click but is not set as clickable.");
-    }
-    else if(_click == nullptr)
-    {
-        logWarning("[Node] " + _name + " clicked but no callback is registered.");
-    }
-    else
-    {
-        _click(this);
-    }
-}
-
-
-//===============
 // Others
 //===============
 
@@ -238,4 +242,16 @@ void Node::initializeDestination()
     _destination.w = 0;
     _destination.x = 0;
     _destination.y = 0;
+}
+
+void Node::centerX()
+{
+    if(_parent != nullptr)
+        _destination.x = _parent->getWidth() / 2 - _destination.w / 2;
+}
+
+void Node::centerY()
+{
+    if(_parent != nullptr)
+        _destination.y = _parent->getHeight() / 2 - _destination.h / 2;
 }
