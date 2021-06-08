@@ -33,8 +33,8 @@ class Card : public Node
 
     Card(  
         Renderer* renderer,
-        unsigned int suit,
-        unsigned int rank,
+        uint32_t suit,
+        uint32_t rank,
         SDL_Texture* frontTexture
     );
 
@@ -66,8 +66,8 @@ class Card : public Node
     // Getters
     //===============
     
-    static unsigned int getCardHeight() { return _cardHeight; }
-    static unsigned int getCardWidth() { return _cardWidth; }
+    static uint32_t getCardHeight() { return _cardHeight; }
+    static uint32_t getCardWidth() { return _cardWidth; }
     static std::string getSuitName(int suit) { return _suits[suit]; }
     static std::string getRankName(int rank) { return _ranks[rank]; }
 
@@ -76,11 +76,11 @@ class Card : public Node
      * A key is an ID unique among different cards
      * but shared by identical cards.
      * 
-     * @return unsigned int 
+     * @return uint32_t 
      */
-    unsigned int getKey() { return _rank * 10 + _suit; }
-    unsigned int getSuit() { return _suit; }
-    unsigned int getRank() { return _rank; }
+    uint32_t getKey() { return _rank * 10 + _suit; }
+    uint32_t getSuit() { return _suit; }
+    uint32_t getRank() { return _rank; }
 
     bool getRevealed() { return _revealed; }
 
@@ -97,15 +97,15 @@ class Card : public Node
      * 
      * @return generated name
      */
-    static std::string generateName(unsigned int suit, unsigned int rank);
+    static std::string generateName(uint32_t suit, uint32_t rank);
 
     bool _revealed = true;
-    unsigned int _suit;
-    unsigned int _rank;
+    uint32_t _suit;
+    uint32_t _rank;
     SDL_Texture* _frontTexture;
 
-    static const unsigned int _cardWidth = 69;
-    static const unsigned int _cardHeight = 94;
+    static const uint32_t _cardWidth = 69;
+    static const uint32_t _cardHeight = 94;
     static SDL_Texture* _backTexture;
 
     static std::vector<std::string> _suits;

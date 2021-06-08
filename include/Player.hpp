@@ -1,21 +1,25 @@
 #ifndef PLAYER
 #define PLAYER
 
-class Player
+#include "TextField.hpp"
+
+class Player : public TextField
 {
     public:
-    Player();
+    Player(Renderer* renderer, std::string name, std::string playerName);
     ~Player();
 
-    unsigned int getScore() { return _score; }
-    void setScore(unsigned int score) { _score = score; }
+    uint32_t getScore() { return _score; }
+    void setScore(uint32_t score);
+    void incScore();
 
     bool isActive() { return _active; }
-    void setActive(bool active) { _active = active; }
+    void setActive(bool active);
 
     private:
-    unsigned int _score = 0;
+    uint32_t _score;
     bool _active = false;
+    std::string _playerName;
 };
 
 #endif // PLAYER

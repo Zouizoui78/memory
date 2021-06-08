@@ -14,12 +14,17 @@ class Memory : public Node
     Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* background);
     ~Memory();
 
-    private:
-
 
     //==========================
     // Util functions
     //==========================
+
+    public:
+
+    void update();
+    bool getQuit();
+
+    private:
 
     Node* createMainMenu();
     Node* createGameMenu();
@@ -73,6 +78,12 @@ class Memory : public Node
     void prepareCard(Card* card, std::string suffixe);
     void removeCard(Card* card);
 
+    std::string ticksToString(uint32_t ticks);
+    void updateTimer();
+
+    Player* getActivePlayer();
+    Player* getNextPlayer();
+
 
     //====================
     // Buttons functions
@@ -123,6 +134,8 @@ class Memory : public Node
 
     private:
 
+    bool _quit = false;
+
     /**
      * @brief Describe the game state.
      * 0 = no card revealed
@@ -130,12 +143,16 @@ class Memory : public Node
      * 2 = two cards revealed
      * 3 = pair found
      */
-    unsigned int _state = 0;
+    uint32_t _state = 0;
 
-    unsigned int _playersNb = 1;
-    unsigned int _pairs = 52;
+    uint32_t _playersNb = 1;
+    uint32_t _pairs = 20;
+    uint32_t _pairsFound = 0;
 
-    std::vector<Player> _players;
+    uint32_t _gameStartTime = 0;
+    uint32_t _previousTimeChange = 0;
+
+    std::vector<Player*> _players;
 
     typedef std::map<uint8_t, std::map<uint8_t, SDL_Texture*>> TextureSet;
     TextureSet _textureSet;

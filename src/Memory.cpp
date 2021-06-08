@@ -60,6 +60,22 @@ Node* Memory::createGameMenu()
     std::vector<double> yFactors = { 0.8, 0.9 };
 
     Node* menu =  this->createMenu("game_menu", _gameMenuButtonsNames, texts, yFactors);
+
+    for(uint32_t i = 0 ; i < _playersNb ; ++i)
+    {
+        uint32_t n = i + 1;
+        Player* player = new Player(_renderer, "player" + std::to_string(n), "Joueur " + std::to_string(n));
+        menu->addChild(player);
+        player->centerX();
+        player->setY(menu->getHeight() * 0.1 * n);
+        _players.push_back(player);
+    }
+
+    TextField* timer = new TextField(_renderer, "timer", "00:00");
+    menu->addChild(timer);
+    timer->centerX();
+    timer->setY(menu->getHeight() * 0.6);
+
     _gameMenu = menu;
     return menu;
 }
@@ -112,8 +128,8 @@ bool Memory::loadTextures(SDL_Texture* spriteSheet)
 {
     logInfo("[Memory] Loading cards textures from sprite sheet.");
     bool ok = true;
-    unsigned int loadedCount = 0;
-    unsigned int total = 0;
+    uint32_t loadedCount = 0;
+    uint32_t total = 0;
     for (size_t i = 0; i <= Card::DIAMONDS; i++)
     {
         for (size_t j = 0; j <= Card::SPECIAL; j++)
@@ -157,13 +173,12 @@ Card* Memory::randomCard()
 {
     int i, j;
     bool duplicate = true;
-    logInfo(std::to_string(_pickedCard.size()));
     while(duplicate)
     {
         duplicate = false;
         i = rand() % (Card::DIAMONDS + 1);
         j = rand() % Card::SPECIAL;
-        unsigned int key = j * 10 + i;
+        uint32_t key = j * 10 + i;
 
         //Loop through already rendered cards to check if the new one is a duplicate.
         for(auto card : _pickedCard)
@@ -211,7 +226,7 @@ void Memory::createPairs()
 {
     logInfo("[Memory] Creating " + std::to_string(_pairs) + " pairs.");
     int done = 0;
-    for(unsigned int i = 0 ; i < _pairs ; ++i)
+    for(uint32_t i = 0 ; i < _pairs ; ++i)
     {
         logInfo("[Memory] Generating a random card...");
         Card* card = this->randomCard();
@@ -244,7 +259,7 @@ void Memory::prepareCard(Card* card, std::string suffixe)
     logInfo("[Memory] Found random destination for " + card->getName());
     card->setClickable(true);
     _cardMouseHandler.addSubscriber(card);
-    // card->flip();
+    card->flip();
     _pickedCard.push_back(card);
     _board->addChild(card);
 }
@@ -256,6 +271,57 @@ void Memory::removeCard(Card* card)
     auto search = std::find(_pickedCard.begin(), _pickedCard.end(), card);
     _pickedCard.erase(search);
     delete card;
+}
+
+void Memory::update()
+{
+    this->motion();
+    if(_pairsFound < _pairs)
+        this->updateTimer();
+}
+
+std::string Memory::ticksToString(uint32_t ticks)
+{
+    uint32_t s = ticks / 1000;
+    return std::to_string(s / 60) + ":" + std::to_string(s % 60);
+}
+
+void Memory::updateTimer()
+{
+    TextField* timer = (TextField*)this->findChild("timer", true);
+    uint32_t now = SDL_GetTicks();
+    uint32_t diff = now - _previousTimeChange;
+    if(timer != nullptr && diff > 1000)
+    {
+        timer->setText(this->ticksToString(now - _gameStartTime));
+        _previousTimeChange = now;
+    }
+}
+
+Player* Memory::getActivePlayer()
+{
+    for(Player* p : _players)
+        if(p->isActive()) return p;
+    return nullptr;
+}
+
+Player* Memory::getNextPlayer()
+{
+    bool found = false;
+    for(Player* p : _players)
+    {
+        if(found) return p;
+        if(p->isActive()) found = true;
+    }
+    if(found)
+        return _players[0];
+    else
+        return nullptr;
+}
+
+bool Memory::getQuit()
+{
+    return _quit;
 }
 
 
@@ -327,6 +393,10 @@ bool Memory::start()
     this->_mainMenu->setVisible(false);
     this->createPairs();
 
+    _players[0]->setActive(true);
+
+    _gameStartTime = SDL_GetTicks();
+
     return true;
 }
 
@@ -348,10 +418,22 @@ void Memory::newGame()
     }
     _pickedCard.clear();
 
+    for(Player* p : _players)
+    {
+        _gameMenu->removeChild(p, true);
+    }
+    _players.clear();
+
+    _gameStartTime =0;
+    _previousTimeChange = 0;
+    _pairsFound = 0;
     _state = 0;
 }
 
-void Memory::quit() {}
+void Memory::quit()
+{
+    _quit = true;
+}
 
 
 //==========================
@@ -390,20 +472,49 @@ void Memory::callback(Card* clicked)
     {
         clicked->flip();
         _revealedCards.first = clicked;
-        clicked->setClickable(false);
         _state = 1;
     }
 
-    else if(_state == 1)
+    else if(_state == 1 && clicked != _revealedCards.first)
     {
         clicked->flip();
         _revealedCards.second = clicked;
-        if(_revealedCards.first != clicked && _revealedCards.first->getKey() == clicked->getKey())
+        if(_revealedCards.first->getKey() == clicked->getKey())
         {
+            Player* p = this->getActivePlayer();
+            if(p == nullptr)
+            {
+                logError("[Memory] No active player !");
+                this->quit();
+                return;
+            }
+            p->incScore();
+            ++_pairsFound;
+            
             _state = 3;
         }
-        else
+        else // No pair found.
         {
+            Player* p = this->getActivePlayer();
+            Player* np = this->getNextPlayer();
+
+            if(p == nullptr)
+            {
+                logError("[Memory] No active player.");
+                this->quit();
+                return;
+            }
+
+            if(np == nullptr)
+            {
+                logError("[Memory] Failed to get next player.");
+                this->quit();
+                return;
+            }
+
+            p->setActive(false);
+            np->setActive(true);
+
             _state = 2;
         }
     }
@@ -411,7 +522,6 @@ void Memory::callback(Card* clicked)
     else if(_state == 2)
     {
         _revealedCards.first->flip();
-        _revealedCards.first->setClickable(true);
         _revealedCards.second->flip();
         _revealedCards = { nullptr, nullptr };
         _state = 0;
@@ -450,6 +560,11 @@ void Memory::callback(TextField* clicked)
     {
         if(!this->start())
             logError("[Memory] Failed to start game.");
+    }
+
+    if(name == _mainMenuButtonsNames[5])
+    {
+        this->quit();
     }
 
     if(name == _gameMenuButtonsNames[0])

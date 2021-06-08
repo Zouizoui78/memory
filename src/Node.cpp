@@ -36,7 +36,7 @@ Node::~Node()
     }
     _children.clear();
 
-    logInfo("[Node] Removed node " + _name);
+    // logInfo("[Node] Removed node " + _name);
 }
 
 
@@ -106,7 +106,7 @@ bool Node::removeChild(std::string name, bool deleteNode)
     }
 }
 
-Node* Node::findChild(std::string name)
+Node* Node::findChild(std::string name, bool recursive)
 {
     if(name.empty())
     {
@@ -119,6 +119,17 @@ Node* Node::findChild(std::string name)
         if(child->getName() == name)
             return child;
     }
+
+    if(recursive)
+    {
+        for(Node* node : _children)
+        {
+            Node* result = node->findChild(name, recursive);
+            if(result != nullptr)
+                return result;
+        }
+    }
+
     return nullptr;
 }
 

@@ -66,9 +66,10 @@ class Node
      * @brief Search for a child by name.
      * 
      * @param name Name of the child to look for.
+     * @param recursive Recursivity or not.
      * @return Pointer to the child or nullptr if not found.
      */
-    Node* findChild(std::string name);
+    Node* findChild(std::string name, bool recursive = false);
 
 
     //===============

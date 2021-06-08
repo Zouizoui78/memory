@@ -8,7 +8,6 @@ int main(int argc, char*argv[])
 {
     srand(time(NULL));
     SDL_Event event;
-    bool quit = false;
 
     Renderer r;
     if(!r.init())
@@ -24,7 +23,7 @@ int main(int argc, char*argv[])
     Memory memory(&r, cardSpriteSheet, background);
 
     //Main loop.
-    while(!quit)
+    while(!memory.getQuit())
     {
         r.clear();
 
@@ -41,7 +40,7 @@ int main(int argc, char*argv[])
                 if(event.key.keysym.sym == SDLK_ESCAPE)
                 {
                     logInfo("[Main] Closing.");
-                    quit = true;
+                    break;
                 }
                 else
                 {
@@ -50,7 +49,7 @@ int main(int argc, char*argv[])
             }
         }
 
-        memory.motion();
+        memory.update();
         memory.render();
         r.refresh();
         SDL_Delay(100);
