@@ -19,6 +19,7 @@ MouseHandler::MouseHandler(SDL_Rect action_area) : _action_area(action_area)
 MouseHandler::~MouseHandler()
 {
     _hoveredNode = nullptr;
+    _subscribers.clear();
 }
 
 bool MouseHandler::addSubscriber(Node* node)
