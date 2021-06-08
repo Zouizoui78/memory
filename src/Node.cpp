@@ -197,8 +197,9 @@ SDL_Rect Node::getGlobalDestination()
     else
     {
         SDL_Rect ret = _destination;
-        ret.x += _parent->getX();
-        ret.y += _parent->getY();
+        SDL_Rect parent = _parent->getGlobalDestination();
+        ret.x += parent.x;
+        ret.y += parent.y;
         return ret;
     }
 }
@@ -212,14 +213,14 @@ bool Node::isVisible()
 {
 
     if(_parent != nullptr)
-        return _parent->isVisible() && this->isInTree() && _visible;
+        return _visible && this->isInTree() && _parent->isVisible();
     else
         return _visible;
 }
 
 bool Node::isClickable()
 {
-    return this->isVisible() && _clickable;
+    return _clickable && this->isVisible();
 }
 
 
