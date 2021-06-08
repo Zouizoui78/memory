@@ -70,7 +70,7 @@ class Memory : public Node
     SDL_Rect randomDestination(int w, int h, int maxX, int maxY);
 
     void createPairs();
-    void prepareCard(Card* card);
+    void prepareCard(Card* card, std::string suffixe);
     void removeCard(Card* card);
 
 
@@ -133,7 +133,7 @@ class Memory : public Node
     unsigned int _state = 0;
 
     unsigned int _playersNb = 1;
-    unsigned int _pairs = 5;
+    unsigned int _pairs = 52;
 
     std::vector<Player> _players;
 

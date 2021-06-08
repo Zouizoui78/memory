@@ -155,16 +155,15 @@ bool Memory::loadTextures(SDL_Texture* spriteSheet)
 
 Card* Memory::randomCard()
 {
-    Card* card = nullptr;
     int i, j;
     bool duplicate = true;
+    logInfo(std::to_string(_pickedCard.size()));
     while(duplicate)
     {
         duplicate = false;
         i = rand() % (Card::DIAMONDS + 1);
         j = rand() % Card::SPECIAL;
-        card = new Card(_renderer, i, j, _textureSet[i][j]);
-        unsigned int key = card->getKey();
+        unsigned int key = j * 10 + i;
 
         //Loop through already rendered cards to check if the new one is a duplicate.
         for(auto card : _pickedCard)
@@ -176,7 +175,7 @@ Card* Memory::randomCard()
     }
 
     //If not duplicate return the card.
-    return card;
+    return new Card(_renderer, i, j, _textureSet[i][j]);
 }
 
 SDL_Rect Memory::randomDestination(int w, int h, int maxX, int maxY)
@@ -210,30 +209,39 @@ SDL_Rect Memory::randomDestination(int w, int h, int maxX, int maxY)
 
 void Memory::createPairs()
 {
+    logInfo("[Memory] Creating " + std::to_string(_pairs) + " pairs.");
+    int done = 0;
     for(unsigned int i = 0 ; i < _pairs ; ++i)
     {
+        logInfo("[Memory] Generating a random card...");
         Card* card = this->randomCard();
         if(card == nullptr)
         {
             logError("[Memory] Failed to get a random card.");
             return;
         }
+        logInfo("[Memory] Generated random card " + card->getName());
 
         Card* card2 = new Card(_renderer, card->getSuit(), card->getRank(), card->getTexture());
 
-        this->prepareCard(card);
-        this->prepareCard(card2);
+        this->prepareCard(card, "_1");
+        this->prepareCard(card2, "_2");
+        ++done;
+        logInfo("[Memory] Created " + std::to_string(done) + "/" + std::to_string(_pairs) + " pairs.");
     }
 }
 
-void Memory::prepareCard(Card* card)
+void Memory::prepareCard(Card* card, std::string suffixe)
 {
-    card->setDestination(this->randomDestination(
+    card->setName(card->getName() + suffixe);
+    logInfo("[Memory] Looking for a random destination for " + card->getName());
+        card->setDestination(this->randomDestination(
         card->getWidth(),
         card->getHeight(),
         _board->getWidth() - card->getWidth(),
         _board->getHeight() - card->getHeight()
     ));
+    logInfo("[Memory] Found random destination for " + card->getName());
     card->setClickable(true);
     _cardMouseHandler.addSubscriber(card);
     // card->flip();
