@@ -135,7 +135,7 @@ bool Node::render()
         return false;
     }
 
-    if(!_visible)
+    if(!this->isVisible())
         return true;
 
     if(_texture != nullptr)
@@ -210,15 +210,16 @@ bool Node::isInTree()
 
 bool Node::isVisible()
 {
+
     if(_parent != nullptr)
-        return _parent->isVisible() && _visible;
-    
-    return _visible;
+        return _parent->isVisible() && this->isInTree() && _visible;
+    else
+        return _visible;
 }
 
 bool Node::isClickable()
 {
-    return _clickable;
+    return this->isVisible() && _clickable;
 }
 
 

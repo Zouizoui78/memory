@@ -119,7 +119,7 @@ class Node
 
     /**
      * @brief Get whether this object is visible or not.
-     * An invisible object and its children are not rendered.
+     * An invisible object and its children are not rendered nor clickable.
      * 
      * @return true 
      * @return false 
@@ -129,6 +129,7 @@ class Node
     /**
      * @brief Get whether this object will react
      * to input mouse events or not.
+     * An invisible object is not clickable.
      * 
      * @return true 
      * @return false 

@@ -78,7 +78,7 @@ void MouseHandler::motion()
         for(auto node : _subscribers)
         {
             SDL_Rect dest = node->getGlobalDestination();
-            if(node->isInTree() && node->isVisible() && node->isClickable() && SDL_PointInRect(&cursor_pos, &dest))
+            if(node->isClickable() && SDL_PointInRect(&cursor_pos, &dest))
             {
                 hover = true;
                 if(_hoveredNode != node)
@@ -89,15 +89,19 @@ void MouseHandler::motion()
                 break;
             }
         }
+
+        // Set cursor here because if set outside of this if
+        // mouse handlers (if multiple) will overwrite each other's cursor.
+        if(hover)
+            this->handCursor();
+        else
+            this->normalCursor();
     }
-        
-    if(hover)
-        this->handCursor();
-    else
-    {
-        this->normalCursor();
+
+    // Set pointer here to update it even if cursor
+    // is not in action area.
+    if(!hover)
         _hoveredNode = nullptr;
-    }
 }
 
 void MouseHandler::normalCursor()
