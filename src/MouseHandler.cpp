@@ -89,14 +89,14 @@ void MouseHandler::motion()
                 break;
             }
         }
+    }
         
-        if(hover)
-            this->handCursor();
-        else
-        {
-            this->normalCursor();
-            _hoveredNode = nullptr;
-        }
+    if(hover)
+        this->handCursor();
+    else
+    {
+        this->normalCursor();
+        _hoveredNode = nullptr;
     }
 }
 

@@ -35,13 +35,7 @@ Card::Card(
     _frontTexture(frontTexture)
 {}
 
-Card::~Card()
-{
-    if(_frontTexture != nullptr && !_revealed)
-        SDL_DestroyTexture(_frontTexture);
-    if(_backTexture != nullptr && _revealed)
-        SDL_DestroyTexture(_backTexture);
-}
+Card::~Card() {}
 
 bool Card::setBackTexture(SDL_Texture* texture)
 {
