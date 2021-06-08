@@ -31,10 +31,7 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     _buttonMouseHandler.setActionArea(_mainMenu->getGlobalDestination());
 }
 
-Memory::~Memory()
-{
-    // this->destroyCards();
-}
+Memory::~Memory() {}
 
 //====================
 // Init functions
@@ -385,6 +382,7 @@ void Memory::callback(Card* clicked)
     {
         clicked->flip();
         _revealedCards.first = clicked;
+        clicked->setClickable(false);
         _state = 1;
     }
 
@@ -405,6 +403,7 @@ void Memory::callback(Card* clicked)
     else if(_state == 2)
     {
         _revealedCards.first->flip();
+        _revealedCards.first->setClickable(true);
         _revealedCards.second->flip();
         _revealedCards = { nullptr, nullptr };
         _state = 0;
