@@ -1,1 +1,1 @@
-Add IClickable interface.
+Better click/button handling. Need the ability to bind a function to an object.
