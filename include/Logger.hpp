@@ -32,4 +32,10 @@ void logError(std::string msg);
  */
 void log(std::string level, std::string msg);
 
+/**
+ * @brief Remove log file if already present.
+ * 
+ */
+void logInit();
+
 #endif // LOGGER

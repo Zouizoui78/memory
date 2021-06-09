@@ -9,6 +9,8 @@ int main(int argc, char*argv[])
     srand(time(NULL));
     SDL_Event event;
 
+    logInit();
+
     Renderer r;
     if(!r.init())
     {
@@ -16,10 +18,19 @@ int main(int argc, char*argv[])
     }
     
     TTF_Font* font = r.loadFont("res/olivier.ttf", 45);
+    if(font == nullptr)
+        return -1;
+
     r.setDefaultFont(font);
 
     SDL_Texture* cardSpriteSheet = r.loadImage("res/cards.bmp");
+    if(cardSpriteSheet == nullptr)
+        return -1;
+
     SDL_Texture* background = r.loadImage("res/background.bmp");
+    if(background == nullptr)
+        return -1;
+
     Memory memory(&r, cardSpriteSheet, background);
 
     //Main loop.
@@ -40,7 +51,7 @@ int main(int argc, char*argv[])
                 if(event.key.keysym.sym == SDLK_ESCAPE)
                 {
                     logInfo("[Main] Closing.");
-                    break;
+                    memory.quit();
                 }
                 else
                 {

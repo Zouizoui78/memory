@@ -33,7 +33,7 @@ bool Renderer::init()
         0,
         _width,
         _height,
-        SDL_WINDOW_FULLSCREEN
+        SDL_WINDOW_BORDERLESS
     );
     if(_window == nullptr)
     {
@@ -133,9 +133,15 @@ bool Renderer::setDrawColor(SDL_Color& color)
 
 TTF_Font* Renderer::loadFont(std::string fontPath, int size)
 {
+    if(fontPath.empty())
+    {
+        logError("[Renderer] Cannot load font, empty path.");
+        return nullptr;
+    }
+
     TTF_Font* font = TTF_OpenFont(fontPath.c_str(), size);
     if(font == nullptr)
-        logError("[Renderer] Unable to load font.");
+        logError("[Renderer] Failed to load font.");
     else
         logInfo("[Renderer] Loaded font " + fontPath);
     return font;

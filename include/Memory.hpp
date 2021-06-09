@@ -24,6 +24,8 @@ class Memory : public Node
     void update();
     bool getQuit();
 
+    void quit();
+
     private:
 
     Node* createMainMenu();
@@ -111,8 +113,6 @@ class Memory : public Node
      * and brings back the main menu.
      */
     void newGame();
-
-    void quit();
 
 
     //==========================
