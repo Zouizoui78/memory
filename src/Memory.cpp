@@ -438,12 +438,8 @@ void Memory::newGame()
     {
         this->removeCard((Card*)node);
     }
-    _pickedCard.clear();
 
-    for(Player* p : _players)
-    {
-        _gameMenu->removeChild(p, true);
-    }
+    _pickedCard.clear();
     _players.clear();
 
     _gameStartTime =0;
