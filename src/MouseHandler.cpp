@@ -68,6 +68,11 @@ SDL_Rect MouseHandler::getActionArea()
     return _action_area;
 }
 
+void MouseHandler::setHighlight(bool highlight)
+{
+    _highlight = highlight;
+}
+
 void MouseHandler::motion()
 {
     bool hover = false;
@@ -94,7 +99,14 @@ void MouseHandler::motion()
         // Set cursor here because if set outside of this if
         // mouse handlers (if multiple) will overwrite each other's cursor.
         if(hover)
+        {
+            if(_highlight)
+            {
+                SDL_Color color = { 100, 100, 100, 255};
+                _hoveredNode->highlight(color);
+            }
             this->handCursor();
+        }
         else
             this->normalCursor();
     }

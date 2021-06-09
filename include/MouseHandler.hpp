@@ -18,6 +18,13 @@ class MouseHandler
     SDL_Rect getActionArea();
 
     /**
+     * @brief Call highlight() on hovered nodes or not.
+     * 
+     * @param highlight 
+     */
+    void setHighlight(bool highlight);
+
+    /**
      * @brief Read current mouse cursor position
      * to determine which element is hovered.
      * 
@@ -46,6 +53,7 @@ class MouseHandler
     Node* _hoveredNode = nullptr;
     SDL_Cursor* _normalCursor;
     SDL_Cursor* _handCursor;
+    bool _highlight = false;
 
     /**
      * @brief Area in which this handler should be active.
