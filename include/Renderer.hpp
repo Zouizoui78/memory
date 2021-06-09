@@ -124,14 +124,6 @@ class Renderer
     bool cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect);
 
     /**
-     * @brief Render the rectangle.
-     * 
-     * @param rect Rectangle to render.
-     * @return Ok or not.
-     */
-    bool renderRectangle(SDL_Rect* rect);
-
-    /**
      * @brief Fill _width and _height with values taken from SDL.
      * 
      * @return Ok or not.
@@ -174,6 +166,16 @@ class Renderer
      * @return SDL_Texture* nullptr if failure.
      */
     SDL_Texture* createBlankRenderTarget(int width, int height);
+
+    /**
+     * @brief Draw the passed rectangle.
+     * 
+     * @param rect Rectangle to draw.
+     * @param color Defaults to white.
+     * @param restoreTexture Backup and restore current drawing texture or not.
+     * @return Ok or not.
+     */
+    bool drawRectangle(SDL_Rect* rect, SDL_Color color = { 255, 255, 255, 255 }, bool restoreTexture = false);
     
 
     private:

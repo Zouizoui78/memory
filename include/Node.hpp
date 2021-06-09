@@ -175,6 +175,14 @@ class Node
     void centerX();
     void centerY();
 
+    /**
+     * @brief Highlight this node by drawing a rectangle around it.
+     * 
+     * @param color Defaults to red.
+     * @return Ok or not.
+     */
+    bool highlight(SDL_Color color = { 255, 0, 0, 255 });
+
 
     //===============
     // Attributes

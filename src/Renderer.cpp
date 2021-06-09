@@ -74,6 +74,12 @@ void Renderer::refresh()
 
 bool Renderer::clear()
 {
+    if(SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0) == -1)
+    {
+        logError("[Renderer] Failed to set drawing color to black before clearing.");
+        return false;
+    }
+
     if(SDL_RenderClear(_renderer) == -1)
     {
         logError("[Renderer] Failed to clear renderer.");
@@ -264,16 +270,6 @@ bool Renderer::cropTexture(SDL_Texture* src, SDL_Texture*& dst, SDL_Rect* rect)
     return true;
 }
 
-bool Renderer::renderRectangle(SDL_Rect* rect)
-{
-    if(SDL_RenderDrawRect(_renderer, rect) == -1)
-    {
-        logError("[Renderer] Failed to render rectangle.");
-        return false;
-    }
-    return true;
-}
-
 bool Renderer::getScreenSize()
 {
     SDL_DisplayMode mode = SDL_DisplayMode();
@@ -356,4 +352,38 @@ bool Renderer::renderToTexture(SDL_Texture* src, SDL_Texture* dst, SDL_Rect* dst
 SDL_Texture* Renderer::createBlankRenderTarget(int width, int height)
 {
     return SDL_CreateTexture(_renderer, SDL_GetWindowPixelFormat(_window), SDL_TEXTUREACCESS_TARGET, width, height);
+}
+
+bool Renderer::drawRectangle(SDL_Rect* rect, SDL_Color color, bool restoreTexture)
+{
+    if(rect == nullptr)
+    {
+        logError("[Renderer] drawRectangle : rect = nullptr.");
+        return false;
+    }
+
+    SDL_Color colorBackup;
+    if(restoreTexture && SDL_GetRenderDrawColor(_renderer, &(colorBackup.r), &(colorBackup.g), &(colorBackup.b), &(colorBackup.a)) == -1)
+    {
+        logWarning("[Renderer] drawRectangle : Failed to backup current drawing color, will not restore it.");
+    }
+
+    if(SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, color.a) == -1)
+    {
+        logWarning("[Renderer] drawRectangle : Failed to set drawing color.");
+    }
+
+    bool ok = true;
+    if(SDL_RenderDrawRect(_renderer, rect) == -1)
+    {
+        logError("[Renderer] drawRectangle : Failed to render rectangle.");
+        ok = false;
+    }
+
+    if(restoreTexture && SDL_SetRenderDrawColor(_renderer, colorBackup.r, colorBackup.g, colorBackup.b, colorBackup.a) == -1)
+    {
+        logWarning("[Renderer] drawRectangle : Failed to restore drawing color.");
+    }
+
+    return ok;
 }

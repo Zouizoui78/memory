@@ -291,3 +291,9 @@ void Node::centerY()
     if(_parent != nullptr)
         _destination.y = _parent->getHeight() / 2 - _destination.h / 2;
 }
+
+bool Node::highlight(SDL_Color color)
+{
+    SDL_Rect rect = this->getGlobalDestination();
+    return _renderer->drawRectangle(&rect, color);
+}
