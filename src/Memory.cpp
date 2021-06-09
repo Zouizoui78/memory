@@ -3,6 +3,9 @@
 
 #include <algorithm>
 
+#include <iomanip> // For timer formatting.
+#include <sstream>
+
 Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* background) : Node(renderer, "root")
 {
     _background = background;
@@ -283,7 +286,9 @@ void Memory::update()
 std::string Memory::ticksToString(uint32_t ticks)
 {
     uint32_t s = ticks / 1000;
-    return std::to_string(s / 60) + ":" + std::to_string(s % 60);
+    std::stringstream string;
+    string << std::setw(2) << std::setfill('0') << std::to_string(s / 60) << ":" << std::setw(2) << std::setfill('0') << std::to_string(s % 60) << std::endl;
+    return string.str();
 }
 
 void Memory::updateTimer()
