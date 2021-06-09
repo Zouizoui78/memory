@@ -138,10 +138,11 @@ class Memory : public Node
 
     /**
      * @brief Describe the game state.
-     * 0 = no card revealed
-     * 1 = one card revealed
-     * 2 = two cards revealed
-     * 3 = pair found
+     * 0 = menu
+     * 1 = no card revealed
+     * 2 = one card revealed
+     * 3 = two cards revealed
+     * 4 = pair found
      */
     uint32_t _state = 0;
 

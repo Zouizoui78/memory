@@ -13,6 +13,8 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     this->loadTextures(spriteSheet);
     Card::setBackTexture(_textureSet[Card::CLUBS][Card::SPECIAL]);
 
+    _buttonMouseHandler.setHighlight(true);
+
     SDL_Rect dst;
     dst.h = renderer->getHeight();
     dst.w = renderer->getWidth() * 0.8;
@@ -279,15 +281,28 @@ void Memory::removeCard(Card* card)
 void Memory::update()
 {
     this->motion();
-    if(_pairsFound < _pairs)
-        this->updateTimer();
+    if(_state > 0)
+    {
+        if(_pairsFound < _pairs)
+            this->updateTimer();
+        for(Player* p : _players)
+        {
+            if(p->isActive())
+                p->highlight();
+        }
+    }
+
+    if(_state == 0)
+    {
+        _mainMenu->findChild(_mainMenuButtonsNames[_playersNb - 1])->highlight();
+    }
 }
 
 std::string Memory::ticksToString(uint32_t ticks)
 {
     uint32_t s = ticks / 1000;
     std::stringstream string;
-    string << std::setw(2) << std::setfill('0') << std::to_string(s / 60) << ":" << std::setw(2) << std::setfill('0') << std::to_string(s % 60) << std::endl;
+    string << std::setw(2) << std::setfill('0') << std::to_string(s / 60) << ":" << std::setw(2) << std::setfill('0') << std::to_string(s % 60);
     return string.str();
 }
 
@@ -402,6 +417,8 @@ bool Memory::start()
 
     _gameStartTime = SDL_GetTicks();
 
+    _state = 1;
+
     return true;
 }
 
@@ -473,14 +490,14 @@ void Memory::callback(Card* clicked)
 
     logInfo("[Memory] Card " + clicked->getName() + " clicked.");
     
-    if(_state == 0)
+    if(_state == 1)
     {
         clicked->flip();
         _revealedCards.first = clicked;
-        _state = 1;
+        _state = 2;
     }
 
-    else if(_state == 1 && clicked != _revealedCards.first)
+    else if(_state == 2 && clicked != _revealedCards.first)
     {
         clicked->flip();
         _revealedCards.second = clicked;
@@ -496,7 +513,7 @@ void Memory::callback(Card* clicked)
             p->incScore();
             ++_pairsFound;
             
-            _state = 3;
+            _state = 4;
         }
         else // No pair found.
         {
@@ -520,24 +537,24 @@ void Memory::callback(Card* clicked)
             p->setActive(false);
             np->setActive(true);
 
-            _state = 2;
+            _state = 3;
         }
-    }
-
-    else if(_state == 2)
-    {
-        _revealedCards.first->flip();
-        _revealedCards.second->flip();
-        _revealedCards = { nullptr, nullptr };
-        _state = 0;
     }
 
     else if(_state == 3)
     {
+        _revealedCards.first->flip();
+        _revealedCards.second->flip();
+        _revealedCards = { nullptr, nullptr };
+        _state = 1;
+    }
+
+    else if(_state == 4)
+    {
         this->removeCard(_revealedCards.first);
         this->removeCard(_revealedCards.second);
         _revealedCards = { nullptr, nullptr };
-        _state = 0;
+        _state = 1;
     }
 }
 
