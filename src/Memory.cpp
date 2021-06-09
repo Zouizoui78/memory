@@ -23,6 +23,7 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     _board = new Node(renderer, "board", background, dst);
     this->addChild(_board);
     _cardMouseHandler.setActionArea(dst);
+    _cardMouseHandler.addSubscriber(_board);
 
     _mainMenu = this->createMainMenu();
     if(_mainMenu != nullptr)
@@ -454,6 +455,81 @@ void Memory::quit()
 }
 
 
+//====================
+// State functions
+//====================
+
+void Memory::state1(Card* clicked)
+{
+    clicked->flip();
+    _revealedCards.first = clicked;
+    _state = 2;
+}
+
+void Memory::state2(Card* clicked)
+{
+    clicked->flip();
+    _revealedCards.second = clicked;
+    _board->setClickable(true);
+    if(_revealedCards.first->getKey() == clicked->getKey())
+    {
+        Player* p = this->getActivePlayer();
+        if(p == nullptr)
+        {
+            logError("[Memory] No active player !");
+            this->quit();
+            return;
+        }
+        p->incScore();
+        ++_pairsFound;
+        
+        _state = 4;
+    }
+    else // No pair found.
+    {
+        Player* p = this->getActivePlayer();
+        Player* np = this->getNextPlayer();
+
+        if(p == nullptr)
+        {
+            logError("[Memory] No active player.");
+            this->quit();
+            return;
+        }
+
+        if(np == nullptr)
+        {
+            logError("[Memory] Failed to get next player.");
+            this->quit();
+            return;
+        }
+
+        p->setActive(false);
+        np->setActive(true);
+
+        _state = 3;
+    }
+}
+
+void Memory::state3(Card* clicked)
+{
+    _revealedCards.first->flip();
+    _revealedCards.second->flip();
+    _revealedCards = { nullptr, nullptr };
+    _board->setClickable(false);
+    _state = 1;
+}
+
+void Memory::state4(Card* clicked)
+{
+    this->removeCard(_revealedCards.first);
+    this->removeCard(_revealedCards.second);
+    _revealedCards = { nullptr, nullptr };
+    _board->setClickable(false);
+    _state = 1;
+}
+
+
 //==========================
 // Input handling
 //==========================
@@ -488,69 +564,22 @@ void Memory::callback(Card* clicked)
     
     if(_state == 1)
     {
-        clicked->flip();
-        _revealedCards.first = clicked;
-        _state = 2;
+        this->state1(clicked);
     }
 
     else if(_state == 2 && clicked != _revealedCards.first)
     {
-        clicked->flip();
-        _revealedCards.second = clicked;
-        if(_revealedCards.first->getKey() == clicked->getKey())
-        {
-            Player* p = this->getActivePlayer();
-            if(p == nullptr)
-            {
-                logError("[Memory] No active player !");
-                this->quit();
-                return;
-            }
-            p->incScore();
-            ++_pairsFound;
-            
-            _state = 4;
-        }
-        else // No pair found.
-        {
-            Player* p = this->getActivePlayer();
-            Player* np = this->getNextPlayer();
-
-            if(p == nullptr)
-            {
-                logError("[Memory] No active player.");
-                this->quit();
-                return;
-            }
-
-            if(np == nullptr)
-            {
-                logError("[Memory] Failed to get next player.");
-                this->quit();
-                return;
-            }
-
-            p->setActive(false);
-            np->setActive(true);
-
-            _state = 3;
-        }
+        this->state2(clicked);
     }
 
     else if(_state == 3)
     {
-        _revealedCards.first->flip();
-        _revealedCards.second->flip();
-        _revealedCards = { nullptr, nullptr };
-        _state = 1;
+        this->state3(clicked);
     }
 
     else if(_state == 4)
     {
-        this->removeCard(_revealedCards.first);
-        this->removeCard(_revealedCards.second);
-        _revealedCards = { nullptr, nullptr };
-        _state = 1;
+        this->state4(clicked);
     }
 }
 

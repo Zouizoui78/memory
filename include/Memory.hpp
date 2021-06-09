@@ -88,6 +88,16 @@ class Memory : public Node
 
 
     //====================
+    // State functions
+    //====================
+
+    void state1(Card* clicked);
+    void state2(Card* clicked);
+    void state3(Card* clicked);
+    void state4(Card* clicked);
+
+
+    //====================
     // Buttons functions
     //====================
 
