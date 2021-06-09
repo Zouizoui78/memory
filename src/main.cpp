@@ -63,7 +63,7 @@ int main(int argc, char*argv[])
         memory.update();
         memory.render();
         r.refresh();
-        SDL_Delay(100);
+        SDL_Delay(10);
     }
 
     //Quit SDL.
