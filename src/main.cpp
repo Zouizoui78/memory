@@ -55,7 +55,7 @@ int main(int argc, char*argv[])
                 }
                 else
                 {
-                    memory.key(event.key.keysym.sym);
+                    memory.keypress(event.key.keysym.sym);
                 }
             }
         }

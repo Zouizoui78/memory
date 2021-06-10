@@ -7,12 +7,13 @@
 #include <SDL.h>
 
 #include "Renderer.hpp"
+#include "Clickable.hpp"
 
 /**
  * Graphic node abstraction.
  * Can hold children.
  */
-class Node
+class Node : public Clickable<Node>
 {
     public:
 
@@ -135,7 +136,7 @@ class Node
      * @return true 
      * @return false 
      */
-    bool isClickable();
+    virtual bool isClickable() override;
 
 
     //===============
@@ -159,9 +160,7 @@ class Node
     void setY(int y);
     void setOrigin(int x, int y) { _destination.x = x; _destination.y = y; }
     void setTexture(SDL_Texture* texture) { _texture = texture; }
-    void setVisible(bool visible) { _visible = visible; }
-    void setClickable(bool clickable) { _clickable = clickable; }
-
+    void setVisible(bool visible);
     private:
     void setParent(Node* parent) { _parent = parent; }
 
@@ -197,7 +196,6 @@ class Node
     Node* _parent = nullptr;
     bool _inTree = false;
     bool _visible = true;
-    bool _clickable = false;
 };
 
 #endif // NODE

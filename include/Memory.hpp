@@ -45,14 +45,15 @@ class Memory : public Node
         std::string menuName,
         std::vector<std::string> buttonNames,
         std::vector<std::string> buttonTexts,
-        std::vector<double> buttonYFactors
+        std::vector<double> buttonYFactors,
+        std::vector<bool (Memory::*)(Node*)> callbacks
     );
 
     /**
      * @brief Load the cards textures
      * from the spritesheet.
      * 
-     * @param spriteSheet 
+     * @param spriteSheet
      * @return Ok or not.
      */
     bool loadTextures(SDL_Texture* spriteSheet);
@@ -101,13 +102,13 @@ class Memory : public Node
     // Buttons functions
     //====================
 
-    void setPlayers(int players);
-    void onePlayer();
-    void twoPlayers();
+    bool setPlayers(int players);
+    bool onePlayer(Node* n);
+    bool twoPlayers(Node* n);
 
-    void changePairs(int offset);
-    void incPairs();
-    void decPairs();
+    bool changePairs(int offset);
+    bool incPairs(Node* n);
+    bool decPairs(Node* n);
 
     /**
      * @brief Start a new game with the setting
@@ -115,14 +116,16 @@ class Memory : public Node
      * 
      * @return Ok or not.
      */
-    bool start();
+    bool start(Node* n);
 
     /**
      * @brief Reset the game state.
      * Destroy the running game
      * and brings back the main menu.
      */
-    void newGame();
+    bool newGame(Node*);
+
+    bool buttonQuit(Node*);
 
 
     //==========================
@@ -130,12 +133,12 @@ class Memory : public Node
     //==========================
 
     public:
-    void key(int keycode);
+    void keypress(int keycode);
     void motion();
-    void click();
+    bool click();
 
-    void callback(Card* clicked);
-    void callback(TextField* clicked);
+    bool cardCallback(Node* clicked);
+    void buttonCallback(Node* clicked);
 
 
     //==========================
@@ -159,6 +162,9 @@ class Memory : public Node
     uint32_t _playersNb = 1;
     uint32_t _pairs = 20;
     uint32_t _pairsFound = 0;
+
+    uint8_t _minPairs = 2;
+    uint8_t _maxPairs = 52;
 
     uint32_t _gameStartTime = 0;
     uint32_t _previousTimeChange = 0;

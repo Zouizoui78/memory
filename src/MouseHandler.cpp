@@ -117,6 +117,26 @@ void MouseHandler::motion()
         _hoveredNode = nullptr;
 }
 
+bool MouseHandler::click()
+{
+    SDL_Point cursor_pos;
+    SDL_GetMouseState(&(cursor_pos.x), &(cursor_pos.y));
+    if(SDL_RectEmpty(&_action_area) || SDL_PointInRect(&cursor_pos, &_action_area))
+    {
+        if(_hoveredNode == nullptr)
+        {
+            logInfo("[MouseHandler] Click registered but cursor is not on a clickable element.");
+            return false;
+        }
+        else
+        {
+            logInfo("[MouseHandler] " + _hoveredNode->getName() + " clicked.");
+            return _hoveredNode->click();
+        }
+    }
+    return true;
+}
+
 void MouseHandler::normalCursor()
 {
     SDL_SetCursor(_normalCursor);

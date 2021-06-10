@@ -32,18 +32,11 @@ class MouseHandler
     void motion();
 
     /**
-     * @brief Calls the passed callback.
+     * @brief Call the hovered node click callback.
      * 
-     * @tparam T Type of the object holding the callback.
-     * @tparam TClicked Type of the clicked object.
-     * @param object Object holding the callback.
-     * @param callback Callback to call.
+     * @return Ok or not.
      */
-    template<class T, class TClicked>
-    void click(T* object, void (T::*callback)(TClicked* clicked))
-    {
-        object->callback((TClicked*)_hoveredNode);
-    }
+    bool click();
 
     void normalCursor();
     void handCursor();

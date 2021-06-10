@@ -231,7 +231,7 @@ bool Node::isVisible()
 
 bool Node::isClickable()
 {
-    return _clickable && this->isVisible();
+    return Clickable::isClickable() && this->isVisible();
 }
 
 
@@ -265,6 +265,12 @@ void Node::setX(int x)
 void Node::setY(int y)
 {
     _destination.y = y;
+}
+
+void Node::setVisible(bool visible)
+{
+    _visible = visible;
+    logInfo("[Node] Set visibility of node " + _name + " to " + std::to_string(visible));
 }
 
 

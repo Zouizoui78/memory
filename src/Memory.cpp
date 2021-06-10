@@ -23,6 +23,8 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     _board = new Node(renderer, "board", background, dst);
     this->addChild(_board);
     _cardMouseHandler.setActionArea(dst);
+    _board->setCallback(std::bind(&Memory::cardCallback, this, std::placeholders::_1));
+    _board->setClickable(false);
     _cardMouseHandler.addSubscriber(_board);
 
     _mainMenu = this->createMainMenu();
@@ -47,8 +49,16 @@ Node* Memory::createMainMenu()
 {
     std::vector<std::string> texts = { "1 joueur", "2 joueurs", "+", "-", "Demarrer", "Quitter" };
     std::vector<double> yFactors = { 0.1, 0.2, 0.6, 0.6, 0.8, 0.9 };
+    std::vector<bool (Memory::*)(Node*)> callbacks = {
+        &Memory::onePlayer,
+        &Memory::twoPlayers,
+        &Memory::incPairs,
+        &Memory::decPairs,
+        &Memory::start,
+        &Memory::buttonQuit,
+    };
 
-    Node* menu = this->createMenu("main_menu", _mainMenuButtonsNames, texts, yFactors);
+    Node* menu = this->createMenu("main_menu", _mainMenuButtonsNames, texts, yFactors, callbacks);
     if(menu != nullptr)
     {
         Node* buttonInc = menu->findChild("button_inc_pairs");
@@ -64,8 +74,12 @@ Node* Memory::createGameMenu()
 {
     std::vector<std::string> texts = { "Menu", "Quitter" };
     std::vector<double> yFactors = { 0.8, 0.9 };
+    std::vector<bool (Memory::*)(Node*)> callbacks = {
+        &Memory::newGame,
+        &Memory::buttonQuit
+    };
 
-    Node* menu =  this->createMenu("game_menu", _gameMenuButtonsNames, texts, yFactors);
+    Node* menu =  this->createMenu("game_menu", _gameMenuButtonsNames, texts, yFactors, callbacks);
 
     for(uint32_t i = 0 ; i < _playersNb ; ++i)
     {
@@ -90,7 +104,8 @@ Node* Memory::createMenu(
     std::string menuName,
     std::vector<std::string> buttonNames,
     std::vector<std::string> buttonTexts,
-    std::vector<double> buttonYFactors
+    std::vector<double> buttonYFactors,
+    std::vector<bool (Memory::*)(Node*)> callbacks
 )
 {
     if(!(buttonNames.size() == buttonTexts.size() && buttonTexts.size() == buttonYFactors.size()))
@@ -123,7 +138,7 @@ Node* Memory::createMenu(
 
         button->centerX();
         button->setY(menu->getHeight() * buttonYFactors[i]);
-        button->setClickable(true);
+        button->setCallback(std::bind(callbacks[i], this, std::placeholders::_1));
         _buttonMouseHandler.addSubscriber(button);
     }
 
@@ -263,7 +278,7 @@ void Memory::prepareCard(Card* card, std::string suffixe)
         _board->getHeight() - card->getHeight()
     ));
     logInfo("[Memory] Found random destination for " + card->getName());
-    card->setClickable(true);
+    card->setCallback(std::bind(&Memory::cardCallback, this, std::placeholders::_1));
     _cardMouseHandler.addSubscriber(card);
     card->flip();
     _pickedCard.push_back(card);
@@ -350,50 +365,68 @@ bool Memory::getQuit()
 // Buttons functions
 //====================
 
-void Memory::setPlayers(int players)
+bool Memory::setPlayers(int players)
 {
     _playersNb = players;
     logInfo("[Memory] Players set to " + std::to_string(players));
+    return true;
 }
 
-void Memory::onePlayer()
+bool Memory::onePlayer(Node* n)
 {
-    this->setPlayers(1);
+    return this->setPlayers(1);
 }
 
-void Memory::twoPlayers()
+bool Memory::twoPlayers(Node* n)
 {
-    this->setPlayers(2);
+    return this->setPlayers(2);
 }
 
-void Memory::changePairs(int offset)
+bool Memory::changePairs(int offset)
 {
     _pairs += offset;
     Node* pairs = _mainMenu->findChild("textfield_pairs");
-    ((TextField*)pairs)->setText(std::to_string(_pairs) + " paires");
+    if(pairs == nullptr)
+        return false;
+
+    if(!((TextField*)pairs)->setText(std::to_string(_pairs) + " paires"))
+        return false;
 
     Node* incButton = _mainMenu->findChild("button_inc_pairs");
     Node* decButton = _mainMenu->findChild("button_dec_pairs");
-    if(_pairs == 52)
+    if(incButton == nullptr || decButton == nullptr)
+        return false;
+
+    if(_pairs == _maxPairs)
         incButton->setVisible(false);
-    else if(_pairs != 52 && !incButton->isVisible())
+    else if(_pairs != _maxPairs && !incButton->isVisible())
         incButton->setVisible(true);
-    else if(_pairs == 3)
+    else if(_pairs == _minPairs)
         decButton->setVisible(false);
-    else if(_pairs != 3 && !decButton->isVisible())
+    else if(_pairs != _minPairs && !decButton->isVisible())
         decButton->setVisible(true);
+    
+    return true;
 }
 
-void Memory::incPairs()
+bool Memory::incPairs(Node* n)
 {
-    this->changePairs(1);
-    logInfo("[Memory] Increased pairs to " + std::to_string(_pairs));
+    if(this->changePairs(1))
+    {
+        logInfo("[Memory] Increased pairs to " + std::to_string(_pairs));
+        return true;
+    }
+    return false;
 }
 
-void Memory::decPairs()
+bool Memory::decPairs(Node* n)
 {
-    this->changePairs(-1);
-    logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
+    if(this->changePairs(-1))
+    {
+        logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -402,7 +435,7 @@ void Memory::decPairs()
  * 
  * @return Ok or not.
  */
-bool Memory::start()
+bool Memory::start(Node* n)
 {
     Node* menu = this->createGameMenu();
     if(menu == nullptr)
@@ -410,7 +443,9 @@ bool Memory::start()
         logError("[Memory] Cannot start game, game menu = nullptr.");
         return false;
     }
-    this->addChild(menu);
+    if(!this->addChild(menu))
+        return false;
+
     this->_mainMenu->setVisible(false);
     this->createPairs();
 
@@ -428,12 +463,18 @@ bool Memory::start()
  * Destroy the running game
  * and brings back the main menu.
  */
-void Memory::newGame()
+bool Memory::newGame(Node*)
 {
+    bool ok = true;
     this->_mainMenu->setVisible(true);
+
     for(auto node : this->_gameMenu->getChildren())
-        _buttonMouseHandler.removeSubscriber(node);
-    this->removeChild("game_menu", true);
+    {
+        if(node->isClickable())
+            ok &= _buttonMouseHandler.removeSubscriber(node);
+    }
+
+    ok &= this->removeChild("game_menu", true);
 
     for(Node* node : _board->getChildren())
     {
@@ -447,11 +488,19 @@ void Memory::newGame()
     _previousTimeChange = 0;
     _pairsFound = 0;
     _state = 0;
+
+    return ok;
 }
 
 void Memory::quit()
 {
     _quit = true;
+}
+
+bool Memory::buttonQuit(Node* node)
+{
+    this->quit();
+    return true;
 }
 
 
@@ -534,7 +583,7 @@ void Memory::state4(Card* clicked)
 // Input handling
 //==========================
 
-void Memory::key(int keycode)
+void Memory::keypress(int keycode)
 {
     if(keycode == SDLK_SPACE)
     {
@@ -549,73 +598,39 @@ void Memory::motion()
     _buttonMouseHandler.motion();
 }
 
-void Memory::click()
+bool Memory::click()
 {
-    _cardMouseHandler.click<Memory, Card>(this, &Memory::callback);
-    _buttonMouseHandler.click<Memory, TextField>(this, &Memory::callback);
+    _cardMouseHandler.click();
+    _buttonMouseHandler.click();
+    return true;
 }
 
-void Memory::callback(Card* clicked)
+bool Memory::cardCallback(Node* clicked)
 {
-    if(clicked == nullptr)
-        return;
+    Card* card = (Card*)clicked;
+    if(card == nullptr)
+        return false;
 
-    logInfo("[Memory] Card " + clicked->getName() + " clicked.");
+    logInfo("[Memory] Card " + card->getName() + " clicked.");
     
     if(_state == 1)
     {
-        this->state1(clicked);
+        this->state1(card);
     }
 
-    else if(_state == 2 && clicked != _revealedCards.first)
+    else if(_state == 2 && card != _revealedCards.first)
     {
-        this->state2(clicked);
+        this->state2(card);
     }
 
     else if(_state == 3)
     {
-        this->state3(clicked);
+        this->state3(card);
     }
 
     else if(_state == 4)
     {
-        this->state4(clicked);
+        this->state4(card);
     }
-}
-
-void Memory::callback(TextField* clicked)
-{
-    if(clicked == nullptr)
-        return;
-
-    std::string name = clicked->getName();
-    logInfo("[Memory] Button " + name + " clicked.");
-
-    if(name == _mainMenuButtonsNames[0])
-        onePlayer();
-
-    else if(name == _mainMenuButtonsNames[1])
-        twoPlayers();
-
-    else if(name == _mainMenuButtonsNames[2])
-        incPairs();
-
-    else if(name == _mainMenuButtonsNames[3])
-        decPairs();
-
-    if(name == _mainMenuButtonsNames[4])
-    {
-        if(!this->start())
-            logError("[Memory] Failed to start game.");
-    }
-
-    if(name == _mainMenuButtonsNames[5])
-    {
-        this->quit();
-    }
-
-    if(name == _gameMenuButtonsNames[0])
-    {
-        this->newGame();
-    }
+    return true;
 }
