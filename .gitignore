@@ -33,5 +33,6 @@
 *.app
 
 build
+extlib
 .vscode
 log.txt
