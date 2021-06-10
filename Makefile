@@ -1,6 +1,6 @@
 GCC=g++
 MINGW=i686-w64-mingw32-g++
-FLAGS=-O3 -Wall -Werror -std=c++11
+FLAGS=-O3 -Wall -Werror -Wno-deprecated
 SRC=src/*.cpp
 LINK=-lSDL2 -lSDL2_ttf
 INCLUDE=-Iinclude/
