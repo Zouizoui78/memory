@@ -2,6 +2,8 @@
 #include "Logger.hpp"
 
 #include <algorithm>
+#include <fstream>
+#include <filesystem>
 
 #include <iomanip> // For timer formatting.
 #include <sstream>
@@ -9,6 +11,9 @@
 Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* background) : Node(renderer, "root")
 {
     _background = background;
+
+    if(!this->readSave())
+        logError("[Memory] Failed to read saved high scores.");
 
     this->loadTextures(spriteSheet);
     Card::setBackTexture(_textureSet[Card::CLUBS][Card::SPECIAL]);
@@ -23,6 +28,10 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     _board = new Node(renderer, "board", background, dst);
     this->addChild(_board);
     _cardMouseHandler.setActionArea(dst);
+
+    // FIXME board should have its own callback.
+    // Now its castedt to Card type, which is wrong
+    // but it works because no function is called on it.
     _board->setCallback(std::bind(&Memory::cardCallback, this, std::placeholders::_1));
     _board->setClickable(false);
     _cardMouseHandler.addSubscriber(_board);
@@ -95,6 +104,14 @@ Node* Memory::createGameMenu()
     menu->addChild(timer);
     timer->centerX();
     timer->setY(menu->getHeight() * 0.6);
+
+    if(_highScores[_pairs] != 0)
+    {
+        TextField* record = new TextField(_renderer, "record", "Record : " + this->ticksToString(_highScores[_pairs]));
+        menu->addChild(record);
+        record->centerX();
+        record->setY(menu->getHeight() * 0.7);
+    }
 
     _gameMenu = menu;
     return menu;
@@ -326,10 +343,10 @@ void Memory::updateTimer()
 {
     TextField* timer = (TextField*)this->findChild("timer", true);
     uint32_t now = SDL_GetTicks();
-    uint32_t diff = now - _previousTimeChange;
-    if(timer != nullptr && diff > 1000)
+    _gameDuration = now - _gameStartTime;
+    if(timer != nullptr && now - _previousTimeChange > 1000)
     {
-        timer->setText(this->ticksToString(now - _gameStartTime));
+        timer->setText(this->ticksToString(_gameDuration));
         _previousTimeChange = now;
     }
 }
@@ -481,6 +498,9 @@ bool Memory::newGame(Node*)
         this->removeCard((Card*)node);
     }
 
+    // If we are at state 3 or 4 the board is still clickacle.
+    _board->setClickable(false);
+
     _pickedCard.clear();
     _players.clear();
 
@@ -510,6 +530,7 @@ bool Memory::buttonQuit(Node* node)
 
 void Memory::state1(Card* clicked)
 {
+    logInfo("{Memory] State 1.");
     clicked->flip();
     _revealedCards.first = clicked;
     _state = 2;
@@ -517,6 +538,7 @@ void Memory::state1(Card* clicked)
 
 void Memory::state2(Card* clicked)
 {
+    logInfo("{Memory] State 2.");
     clicked->flip();
     _revealedCards.second = clicked;
     _board->setClickable(true);
@@ -531,6 +553,12 @@ void Memory::state2(Card* clicked)
         }
         p->incScore();
         ++_pairsFound;
+        
+        if(_pairsFound == _pairs && (_gameDuration < _highScores[_pairs] || _highScores[_pairs] == 0))
+        {
+            _highScores[_pairs] = _gameDuration;
+            this->save();
+        }
         
         _state = 4;
     }
@@ -562,6 +590,7 @@ void Memory::state2(Card* clicked)
 
 void Memory::state3(Card* clicked)
 {
+    logInfo("{Memory] State 3.");
     _revealedCards.first->flip();
     _revealedCards.second->flip();
     _revealedCards = { nullptr, nullptr };
@@ -571,6 +600,7 @@ void Memory::state3(Card* clicked)
 
 void Memory::state4(Card* clicked)
 {
+    logInfo("{Memory] State 4.");
     this->removeCard(_revealedCards.first);
     this->removeCard(_revealedCards.second);
     _revealedCards = { nullptr, nullptr };
@@ -633,4 +663,59 @@ bool Memory::cardCallback(Node* clicked)
         this->state4(card);
     }
     return true;
+}
+
+
+//==========================
+// High scores saving
+//==========================
+
+bool Memory::readSave()
+{
+    if(std::filesystem::exists(_savePath))
+    {    
+        std::ifstream file(_savePath, std::ios::in | std::ios::binary);
+        if(!file.is_open())
+        {
+            logError("[Memory] Failed to open save file for reading.");
+            return false;
+        }
+        else
+        {
+            uint32_t tmp = 0;
+            for(uint8_t i = 0 ; i < _maxPairs ; ++i)
+            {
+                file.read((char*)&tmp, sizeof(tmp));
+                _highScores.push_back(tmp);
+            }
+            for(uint32_t e : _highScores)
+                logInfo(std::to_string(e));
+            logInfo("[Memory] High scores loaded.");
+            return true;
+        }
+    }
+    else
+    {
+        for(int i = 0 ; i < _maxPairs ; ++i)
+            _highScores.push_back(0);
+        logInfo("[Memory] A new high scores file will be created.");
+        return true;
+    }
+}
+
+bool Memory::save()
+{
+    std::ofstream file(_savePath, std::ios::out | std::ios::binary);
+    if(!file.is_open())
+    {
+        logError("[Memory] Failed to open save file for writing.");
+        return false;
+    }
+    else
+    {
+        for(auto e : _highScores)
+            file.write((char*)&e, sizeof(e));
+        logInfo("[Memory] High scores saved.");
+        return true;
+    }
 }

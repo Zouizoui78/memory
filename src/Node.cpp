@@ -36,7 +36,7 @@ Node::~Node()
     }
     _children.clear();
 
-    // logInfo("[Node] Removed node " + _name);
+    logInfo("[Node] Removed node " + _name);
 }
 
 

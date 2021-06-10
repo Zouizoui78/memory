@@ -142,6 +142,14 @@ class Memory : public Node
 
 
     //==========================
+    // High scores saving
+    //==========================
+
+    bool readSave();
+    bool save();
+
+
+    //==========================
     // Attributes
     //==========================
 
@@ -168,8 +176,12 @@ class Memory : public Node
 
     uint32_t _gameStartTime = 0;
     uint32_t _previousTimeChange = 0;
+    uint32_t _gameDuration = 0;
 
     std::vector<Player*> _players;
+
+    std::vector<uint32_t> _highScores;
+    std::string _savePath = "high_scores";
 
     typedef std::map<uint8_t, std::map<uint8_t, SDL_Texture*>> TextureSet;
     TextureSet _textureSet;
