@@ -33,7 +33,11 @@ bool Renderer::init()
         0,
         _width,
         _height,
+    #ifdef WINDOWS
         SDL_WINDOW_BORDERLESS
+    #else
+        SDL_WINDOW_FULLSCREEN
+    #endif
     );
     if(_window == nullptr)
     {
