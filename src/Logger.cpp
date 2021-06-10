@@ -8,10 +8,16 @@
 void log(std::string level, std::string msg)
 {
     using namespace date;
-    std::ofstream file;
-    file.open ("log.txt", std::fstream::out | std::fstream::app);
-    file << std::chrono::system_clock::now() << " [" << level << "] " << msg << std::endl;
-    file.close();
+    bool tofile = true;
+    if(tofile)
+    {
+        std::ofstream file;
+        file.open ("log.txt", std::fstream::out | std::fstream::app);
+        file << std::chrono::system_clock::now() << " [" << level << "] " << msg << std::endl;
+        file.close();
+    }
+    else
+        std::cout << std::chrono::system_clock::now() << " [" << level << "] " << msg << std::endl;
 }
 
 void logInfo(std::string msg)
