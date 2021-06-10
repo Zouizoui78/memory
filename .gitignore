@@ -32,7 +32,6 @@
 *.out
 *.app
 
-date
-SDL2
-memory
+build
 .vscode
+log.txt
