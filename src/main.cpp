@@ -17,7 +17,7 @@ int main(int argc, char*argv[])
         return -1;
     }
     
-    TTF_Font* font = r.loadFont("res/olivier.ttf", 45);
+    TTF_Font* font = r.loadFont("res/olivier.ttf", 40);
     if(font == nullptr)
         return -1;
 

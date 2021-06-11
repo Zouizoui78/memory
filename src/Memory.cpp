@@ -22,7 +22,7 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
 
     SDL_Rect dst;
     dst.h = renderer->getHeight();
-    dst.w = renderer->getWidth() * 0.8;
+    dst.w = renderer->getWidth() * _boardWidthRel;
     dst.x = 0;
     dst.y = 0;
     _board = new Node(renderer, "board", background, dst);
@@ -139,8 +139,8 @@ Node* Memory::createMenu(
 
     SDL_Rect dst;
     dst.h = _renderer->getHeight();
-    dst.w = _renderer->getWidth() * 0.2;
-    dst.x = _renderer->getWidth() * 0.8;
+    dst.w = _renderer->getWidth() * (1 - _boardWidthRel);
+    dst.x = _renderer->getWidth() * _boardWidthRel;
     dst.y = 0;
     Node* menu = new Node(_renderer, menuName, nullptr, dst);
 
@@ -532,6 +532,7 @@ void Memory::state1(Card* clicked)
 {
     logInfo("{Memory] State 1.");
     clicked->flip();
+    clicked->setClickable(false);
     _revealedCards.first = clicked;
     _state = 2;
 }
@@ -541,6 +542,7 @@ void Memory::state2(Card* clicked)
     logInfo("{Memory] State 2.");
     clicked->flip();
     _revealedCards.second = clicked;
+    _revealedCards.first->setClickable(true);
     _board->setClickable(true);
     if(_revealedCards.first->getKey() == clicked->getKey())
     {
@@ -648,7 +650,7 @@ bool Memory::cardCallback(Node* clicked)
         this->state1(card);
     }
 
-    else if(_state == 2 && card != _revealedCards.first)
+    else if(_state == 2)
     {
         this->state2(card);
     }

@@ -178,6 +178,8 @@ class Memory : public Node
     uint32_t _previousTimeChange = 0;
     uint32_t _gameDuration = 0;
 
+    float _boardWidthRel = 0.85;
+
     std::vector<Player*> _players;
 
     std::vector<uint32_t> _highScores;
