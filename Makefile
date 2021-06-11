@@ -20,7 +20,7 @@ win:
 	@cp extlib/bin/* $(BUILD)
 	@cp -r res $(BUILD)
 	@cp /usr/i686-w64-mingw32/bin/libwinpthread-1.dll $(BUILD)
-	cd $(BUILD)/.. && zip -r memory.zip memory/
+	@cd $(BUILD)/.. && zip -r memory.zip memory/
 
 clean:
 	@rm -r build
