@@ -683,7 +683,7 @@ bool Memory::readSave()
         else
         {
             uint32_t tmp = 0;
-            for(uint8_t i = 0 ; i < _maxPairs ; ++i)
+            for(int i = 0 ; i <= _maxPairs ; ++i)
             {
                 file.read((char*)&tmp, sizeof(tmp));
                 _highScores.push_back(tmp);
@@ -694,7 +694,7 @@ bool Memory::readSave()
     }
     else
     {
-        for(int i = 0 ; i < _maxPairs ; ++i)
+        for(int i = 0 ; i <= _maxPairs ; ++i)
             _highScores.push_back(0);
         logInfo("[Memory] A new high scores file will be created.");
         return true;
