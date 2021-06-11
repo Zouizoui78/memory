@@ -688,8 +688,6 @@ bool Memory::readSave()
                 file.read((char*)&tmp, sizeof(tmp));
                 _highScores.push_back(tmp);
             }
-            for(uint32_t e : _highScores)
-                logInfo(std::to_string(e));
             logInfo("[Memory] High scores loaded.");
             return true;
         }
