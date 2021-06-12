@@ -56,13 +56,15 @@ Memory::~Memory() {}
 
 Node* Memory::createMainMenu()
 {
-    std::vector<std::string> texts = { "1 joueur", "2 joueurs", "+", "-", "Demarrer", "Quitter" };
-    std::vector<double> yFactors = { 0.1, 0.2, 0.6, 0.6, 0.8, 0.9 };
+    std::vector<std::string> texts = { "1 joueur", "2 joueurs", "+", "++", "-", "--", "Demarrer", "Quitter" };
+    std::vector<double> yFactors = { 0.1, 0.2, 0.6, 0.6, 0.6, 0.6, 0.8, 0.9 };
     std::vector<bool (Memory::*)(Node*)> callbacks = {
         &Memory::onePlayer,
         &Memory::twoPlayers,
         &Memory::incPairs,
+        &Memory::incPairs10,
         &Memory::decPairs,
+        &Memory::decPairs10,
         &Memory::start,
         &Memory::buttonQuit,
     };
@@ -75,6 +77,12 @@ Node* Memory::createMainMenu()
 
         Node* buttonDec = menu->findChild("button_dec_pairs");
         buttonDec->setX(buttonDec->getX() - buttonInc->getWidth());
+
+        Node* buttonInc10 = menu->findChild("button_inc_pairs_10");
+        buttonInc10->setX(buttonInc->getX() + buttonInc->getWidth() * 2);
+
+        Node* buttonDec10 = menu->findChild("button_dec_pairs_10");
+        buttonDec10->setX(buttonDec->getX() - buttonInc->getWidth() * 3);
     }
 
     TextField* record = new TextField(_renderer, "record", "Record : " + this->ticksToString(_highScores[_pairs]));
@@ -113,7 +121,7 @@ Node* Memory::createGameMenu()
     timer->centerX();
     timer->setY(menu->getHeight() * 0.6);
 
-    if(_highScores[_pairs] != 0)
+    if(_highScores[_pairs] != 0 && _playersNb == 1)
     {
         TextField* record = new TextField(_renderer, "record", "Record : " + this->ticksToString(_highScores[_pairs]));
         menu->addChild(record);
@@ -272,7 +280,7 @@ void Memory::createPairs()
 {
     logInfo("[Memory] Creating " + std::to_string(_pairs) + " pairs.");
     int done = 0;
-    for(uint32_t i = 0 ; i < _pairs ; ++i)
+    for(int i = 0 ; i < _pairs ; ++i)
     {
         logInfo("[Memory] Generating a random card...");
         Card* card = this->randomCard();
@@ -324,8 +332,13 @@ void Memory::update()
     this->motion();
     if(_state > 0)
     {
-        if(_pairsFound < _pairs)
+        uint32_t now = SDL_GetTicks();
+        if(_pairsFound < _pairs && now - _previousTimeChange > 1000)
+        {
+            _gameDuration = now - _gameStartTime;
             this->updateTimer();
+            _previousTimeChange = now;
+        }
         for(Player* p : _players)
         {
             if(p->isActive())
@@ -336,20 +349,6 @@ void Memory::update()
     if(_state == 0)
     {
         _mainMenu->findChild(_mainMenuButtonsNames[_playersNb - 1])->highlight();
-        
-        TextField* record = (TextField*)_mainMenu->findChild("record");
-        if(_highScores[_pairs] != 0)
-        {
-            if(record != nullptr)
-            {
-                record->setText("Record : " + this->ticksToString(_highScores[_pairs]));
-                record->setVisible(true);
-            }
-            else
-                logError("[Memory] Failed to find record node to update if.");
-        }
-        else
-            record->setVisible(false);
     }
 }
 
@@ -364,13 +363,25 @@ std::string Memory::ticksToString(uint32_t ticks)
 void Memory::updateTimer()
 {
     TextField* timer = (TextField*)this->findChild("timer", true);
-    uint32_t now = SDL_GetTicks();
-    _gameDuration = now - _gameStartTime;
-    if(timer != nullptr && now - _previousTimeChange > 1000)
-    {
+    if(timer != nullptr)
         timer->setText(this->ticksToString(_gameDuration));
-        _previousTimeChange = now;
+}
+
+void Memory::updateRecord()
+{
+    TextField* record = (TextField*)_mainMenu->findChild("record");
+    if(_highScores[_pairs] != 0)
+    {
+        if(record != nullptr)
+        {
+            record->setText("Record : " + this->ticksToString(_highScores[_pairs]));
+            record->setVisible(true);
+        }
+        else
+            logError("[Memory] Failed to find record node to update it.");
     }
+    else
+        record->setVisible(false);
 }
 
 Player* Memory::getActivePlayer()
@@ -408,6 +419,10 @@ bool Memory::setPlayers(int players)
 {
     _playersNb = players;
     logInfo("[Memory] Players set to " + std::to_string(players));
+    if(_playersNb == 1)
+        this->updateRecord();
+    else
+        _mainMenu->findChild("record")->setVisible(false);
     return true;
 }
 
@@ -424,6 +439,9 @@ bool Memory::twoPlayers(Node* n)
 bool Memory::changePairs(int offset)
 {
     _pairs += offset;
+    if(_pairs > _maxPairs) _pairs = _maxPairs;
+    if(_pairs < _minPairs) _pairs = _minPairs;
+
     Node* pairs = _mainMenu->findChild("textfield_pairs");
     if(pairs == nullptr)
         return false;
@@ -432,18 +450,36 @@ bool Memory::changePairs(int offset)
         return false;
 
     Node* incButton = _mainMenu->findChild("button_inc_pairs");
+    Node* incButton10 = _mainMenu->findChild("button_inc_pairs_10");
     Node* decButton = _mainMenu->findChild("button_dec_pairs");
-    if(incButton == nullptr || decButton == nullptr)
+    Node* decButton10 = _mainMenu->findChild("button_dec_pairs_10");
+    if( incButton == nullptr || decButton == nullptr ||
+        incButton10 == nullptr || decButton10 == nullptr)
         return false;
 
     if(_pairs == _maxPairs)
+    {
         incButton->setVisible(false);
+        incButton10->setVisible(false);
+    }
     else if(_pairs != _maxPairs && !incButton->isVisible())
+    {
         incButton->setVisible(true);
+        incButton10->setVisible(true);
+    }
     else if(_pairs == _minPairs)
+    {
         decButton->setVisible(false);
+        decButton10->setVisible(false);
+    }
     else if(_pairs != _minPairs && !decButton->isVisible())
+    {
         decButton->setVisible(true);
+        decButton10->setVisible(true);
+    }
+
+    if(_playersNb == 1)
+        this->updateRecord();
     
     return true;
 }
@@ -458,9 +494,29 @@ bool Memory::incPairs(Node* n)
     return false;
 }
 
+bool Memory::incPairs10(Node* n)
+{
+    if(this->changePairs(10))
+    {
+        logInfo("[Memory] Increased pairs to " + std::to_string(_pairs));
+        return true;
+    }
+    return false;
+}
+
 bool Memory::decPairs(Node* n)
 {
     if(this->changePairs(-1))
+    {
+        logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
+        return true;
+    }
+    return false;
+}
+
+bool Memory::decPairs10(Node* n)
+{
+    if(this->changePairs(-10))
     {
         logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
         return true;
@@ -523,6 +579,9 @@ bool Memory::newGame(Node*)
     // If we are at state 3 or 4 the board is still clickacle.
     _board->setClickable(false);
 
+    if(_playersNb == 1)
+        this->updateRecord();
+
     _pickedCard.clear();
     _players.clear();
 
@@ -578,10 +637,11 @@ void Memory::state2(Card* clicked)
         p->incScore();
         ++_pairsFound;
         
-        if(_pairsFound == _pairs && (_gameDuration < _highScores[_pairs] || _highScores[_pairs] == 0))
+        if(_playersNb == 1 && _pairsFound == _pairs && (_gameDuration < _highScores[_pairs] || _highScores[_pairs] == 0))
         {
             _highScores[_pairs] = _gameDuration;
             this->save();
+            this->updateTimer();
         }
         
         _state = 4;

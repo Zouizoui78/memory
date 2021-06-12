@@ -83,6 +83,7 @@ class Memory : public Node
 
     std::string ticksToString(uint32_t ticks);
     void updateTimer();
+    void updateRecord();
 
     Player* getActivePlayer();
     Player* getNextPlayer();
@@ -108,7 +109,9 @@ class Memory : public Node
 
     bool changePairs(int offset);
     bool incPairs(Node* n);
+    bool incPairs10(Node* n);
     bool decPairs(Node* n);
+    bool decPairs10(Node* n);
 
     /**
      * @brief Start a new game with the setting
@@ -168,8 +171,8 @@ class Memory : public Node
     uint32_t _state = 0;
 
     uint32_t _playersNb = 1;
-    uint32_t _pairs = 20;
-    uint32_t _pairsFound = 0;
+    int _pairs = 20;
+    int _pairsFound = 0;
 
     uint8_t _minPairs = 2;
     uint8_t _maxPairs = 52;
@@ -203,7 +206,7 @@ class Memory : public Node
     MouseHandler _buttonMouseHandler;
     MouseHandler _cardMouseHandler;
 
-    std::vector<std::string> _mainMenuButtonsNames = { "button_one_player", "button_two_players", "button_inc_pairs", "button_dec_pairs", "button_start", "button_quit" };
+    std::vector<std::string> _mainMenuButtonsNames = { "button_one_player", "button_two_players", "button_inc_pairs", "button_inc_pairs_10","button_dec_pairs", "button_dec_pairs_10", "button_start", "button_quit" };
     std::vector<std::string> _gameMenuButtonsNames = { "button_new_game", "button_quit" };
     std::vector<std::string> _scoreFieldsNames = { "textfield_timer", "textfield_player" };
 };
