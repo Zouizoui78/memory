@@ -16,7 +16,7 @@ win: BUILD=build/windows/memory
 win:
 
 	@mkdir -p $(BUILD)
-	@$(MINGW) $(FLAGS) -s -o $(BUILD)/memory.exe $(SRC) $(INCLUDE) -Iextlib/include -Lextlib/lib -lmingw32 -lSDL2main $(LINK) -mwindows -static-libgcc -static-libstdc++ -D WINDOWS
+	@$(MINGW) $(FLAGS) -s -o $(BUILD)/memory.exe $(SRC) icon/icon.res $(INCLUDE) -Iextlib/include -Lextlib/lib -lmingw32 -lSDL2main $(LINK) -mwindows -static-libgcc -static-libstdc++ -D WINDOWS
 	@cp extlib/bin/* $(BUILD)
 	@cp -r res $(BUILD)
 	@cp /usr/i686-w64-mingw32/bin/libwinpthread-1.dll $(BUILD)
