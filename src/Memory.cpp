@@ -76,6 +76,14 @@ Node* Memory::createMainMenu()
         Node* buttonDec = menu->findChild("button_dec_pairs");
         buttonDec->setX(buttonDec->getX() - buttonInc->getWidth());
     }
+
+    TextField* record = new TextField(_renderer, "record", "Record : " + this->ticksToString(_highScores[_pairs]));
+    menu->addChild(record);
+    record->centerX();
+    record->setY(menu->getHeight() * 0.7);
+    if(_highScores[_pairs] == 0)
+        record->setVisible(false);
+
     return menu;
 }
 
@@ -328,6 +336,20 @@ void Memory::update()
     if(_state == 0)
     {
         _mainMenu->findChild(_mainMenuButtonsNames[_playersNb - 1])->highlight();
+        
+        TextField* record = (TextField*)_mainMenu->findChild("record");
+        if(_highScores[_pairs] != 0)
+        {
+            if(record != nullptr)
+            {
+                record->setText("Record : " + this->ticksToString(_highScores[_pairs]));
+                record->setVisible(true);
+            }
+            else
+                logError("[Memory] Failed to find record node to update if.");
+        }
+        else
+            record->setVisible(false);
     }
 }
 
