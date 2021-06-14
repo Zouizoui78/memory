@@ -1,0 +1,52 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+        {
+            "type": "cppbuild",
+            "label": "make",
+            "command": "mingw32-make",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "compiler: mingw32-make",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "make debug",
+            "command": "mingw32-make",
+            "args": [
+                "debug"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "make dist",
+            "command": "mingw32-make",
+            "args": [
+                "dist"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        },
+        {
+            "type": "cppbuild",
+            "label": "make clean",
+            "command": "mingw32-make",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ]
+}
