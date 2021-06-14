@@ -30,7 +30,7 @@ Memory::Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* backgr
     _cardMouseHandler.setActionArea(dst);
 
     // FIXME board should have its own callback.
-    // Now its castedt to Card type, which is wrong
+    // Its currently casted to Card* type, which is wrong
     // but it works because no function is called on it.
     _board->setCallback(std::bind(&Memory::cardCallback, this, std::placeholders::_1));
     _board->setClickable(false);

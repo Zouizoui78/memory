@@ -19,7 +19,7 @@ win:
 
 build:
 	@mkdir.exe -p $(BUILD)
-	@$(GCC) $(FLAGS) -o $(BUILD)/memory.exe $(SRC) $(INCLUDE) -Iextlib/include -Lextlib/lib -lmingw32 -lSDL2main $(LINK) -lstdc++fs -mwindows -static-libgcc -static-libstdc++ -D WINDOWS
+	@$(GCC) $(FLAGS) -o $(BUILD)/memory.exe $(SRC) icon/icon64.res $(INCLUDE) -Iextlib/include -Lextlib/lib -lmingw32 -lSDL2main $(LINK) -lstdc++fs -mwindows -static-libgcc -static-libstdc++ -D WINDOWS
 	@cp -r res $(BUILD)
 	@cp extlib/bin/* $(BUILD)
 
