@@ -6,6 +6,8 @@ LINK=-lSDL2 -lSDL2_ttf
 INCLUDE=-Iinclude/
 BUILD=build/memory
 
+.PHONY: all dist debug win build clean
+
 all: win
 
 dist: win

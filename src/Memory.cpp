@@ -611,16 +611,15 @@ bool Memory::buttonQuit(Node* node)
 
 void Memory::state1(Card* clicked)
 {
-    logInfo("{Memory] State 1.");
     clicked->flip();
     clicked->setClickable(false);
     _revealedCards.first = clicked;
     _state = 2;
+    logInfo("[Memory] Entering state 2.");
 }
 
 void Memory::state2(Card* clicked)
 {
-    logInfo("{Memory] State 2.");
     clicked->flip();
     _revealedCards.second = clicked;
     _revealedCards.first->setClickable(true);
@@ -645,6 +644,7 @@ void Memory::state2(Card* clicked)
         }
         
         _state = 4;
+        logInfo("[Memory] Entering state 4.");
     }
     else // No pair found.
     {
@@ -669,27 +669,28 @@ void Memory::state2(Card* clicked)
         np->setActive(true);
 
         _state = 3;
+        logInfo("[Memory] Entering state 3.");
     }
 }
 
 void Memory::state3(Card* clicked)
 {
-    logInfo("{Memory] State 3.");
     _revealedCards.first->flip();
     _revealedCards.second->flip();
     _revealedCards = { nullptr, nullptr };
     _board->setClickable(false);
     _state = 1;
+    logInfo("[Memory] Entering state 1.");
 }
 
 void Memory::state4(Card* clicked)
 {
-    logInfo("{Memory] State 4.");
     this->removeCard(_revealedCards.first);
     this->removeCard(_revealedCards.second);
     _revealedCards = { nullptr, nullptr };
     _board->setClickable(false);
     _state = 1;
+    logInfo("[Memory] Entering state 1.");
 }
 
 
