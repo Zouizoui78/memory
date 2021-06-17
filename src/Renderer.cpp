@@ -306,25 +306,6 @@ SDL_Texture* Renderer::surfaceToTexture(SDL_Surface* surface)
     return texture;
 }
 
-SDL_Texture* Renderer::textureAsRenderingTarget(SDL_Texture* src, SDL_Rect* rect, bool freeSrc)
-{
-    SDL_Texture* dst = this->createBlankRenderTarget(rect->w, rect->h);
-
-    if(dst == nullptr)
-    {
-        logError("[Renderer] Failed to create target texture.");
-        return nullptr;
-    }
-
-    if(!this->renderToTexture(src, dst, rect))
-    {
-        logError("[Renderer] Failed to copy texture into a new rendering target texture.");
-        return nullptr;
-    }
-
-    return dst;
-}
-
 bool Renderer::renderToTexture(SDL_Texture* src, SDL_Texture* dst, SDL_Rect* dstRect)
 {
     // Backup rendering target.

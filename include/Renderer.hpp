@@ -139,15 +139,6 @@ class Renderer
     SDL_Texture* surfaceToTexture(SDL_Surface* surface);
 
     /**
-     * @brief Turns a texture into a rendering target.
-     * 
-     * @param texture Source texture
-     * @param freeSrc Whether to free the source texture or not, default = true.
-     * @return new texture, nullptr if error.
-     */
-    SDL_Texture* textureAsRenderingTarget(SDL_Texture* src, SDL_Rect* rect, bool freeSrc = true);
-
-    /**
      * @brief Render a texture into another texture.
      * 
      * @param src Texture to render.

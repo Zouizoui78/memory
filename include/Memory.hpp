@@ -23,7 +23,6 @@ class Memory : public Node
 
     void update();
     bool getQuit();
-
     void quit();
 
     private:
@@ -148,6 +147,7 @@ class Memory : public Node
     // High scores saving
     //==========================
 
+    private:
     bool readSave();
     bool save();
 

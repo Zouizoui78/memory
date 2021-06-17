@@ -2,6 +2,7 @@
 #include "Node.hpp"
 
 #include <algorithm>
+#include <stdexcept>
 
 Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect destination) : 
     _renderer(renderer),
@@ -9,8 +10,11 @@ Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect 
     _destination(destination),
     _texture(texture)
 {
-    if(SDL_RectEmpty(&destination) && _texture != nullptr)
-        SDL_QueryTexture(_texture, nullptr, nullptr, &_destination.w, &_destination.h);
+    if(_texture != nullptr && SDL_RectEmpty(&destination))
+    {
+        if(SDL_QueryTexture(_texture, nullptr, nullptr, &_destination.w, &_destination.h) == -1)
+            throw std::runtime_error("Failed to query texture for node " + _name);
+    }
     logInfo("[Node] Instanciated node " + _name);
 }
 
