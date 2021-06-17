@@ -76,11 +76,9 @@ void MouseHandler::setHighlight(bool highlight)
 void MouseHandler::motion()
 {
     bool hover = false;
-    SDL_Point cursor_pos;
-    SDL_GetMouseState(&(cursor_pos.x), &(cursor_pos.y));
-
-    if(SDL_RectEmpty(&_action_area) || SDL_PointInRect(&cursor_pos, &_action_area))
+    if(this->isTargeted())
     {
+        SDL_Point cursor_pos = this->getCursorPos();
         for(auto node : _subscribers)
         {
             SDL_Rect dest = node->getGlobalDestination();
@@ -96,8 +94,6 @@ void MouseHandler::motion()
             }
         }
 
-        // Set cursor here because if set outside of this if
-        // mouse handlers (if multiple) will overwrite each other's cursor.
         if(hover)
         {
             if(_highlight)
@@ -111,17 +107,15 @@ void MouseHandler::motion()
             this->normalCursor();
     }
 
-    // Set pointer here to update it even if cursor
-    // is not in action area.
+    // Set pointer to nullptr here to update it
+    // even if cursor is not in action area.
     if(!hover)
         _hoveredNode = nullptr;
 }
 
 bool MouseHandler::click()
 {
-    SDL_Point cursor_pos;
-    SDL_GetMouseState(&(cursor_pos.x), &(cursor_pos.y));
-    if(SDL_RectEmpty(&_action_area) || SDL_PointInRect(&cursor_pos, &_action_area))
+    if(this->isTargeted())
     {
         if(_hoveredNode == nullptr)
         {
@@ -145,4 +139,17 @@ void MouseHandler::normalCursor()
 void MouseHandler::handCursor()
 {
     SDL_SetCursor(_handCursor);
+}
+
+SDL_Point MouseHandler::getCursorPos()
+{
+    SDL_Point cursor_pos;
+    SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+    return cursor_pos;
+}
+
+bool MouseHandler::isTargeted()
+{
+    SDL_Point cursor_pos = this->getCursorPos();
+    return SDL_RectEmpty(&_action_area) || SDL_PointInRect(&cursor_pos, &_action_area);
 }

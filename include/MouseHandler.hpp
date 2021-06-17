@@ -38,8 +38,21 @@ class MouseHandler
      */
     bool click();
 
+    private:
     void normalCursor();
     void handCursor();
+
+    SDL_Point getCursorPos();
+
+    /**
+     * @brief Return whether or not the mouse pointer
+     * is in this object action area.
+     * Return always true if the action area is empty.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool isTargeted();
 
     private:
     std::vector<Node*> _subscribers;
