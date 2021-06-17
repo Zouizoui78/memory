@@ -17,12 +17,10 @@ class Node : public Clickable<Node>
 {
     public:
 
-    Node(Renderer* renderer, std::string name);
-
     Node(
         Renderer* renderer,
         std::string name,
-        SDL_Texture* texture,
+        SDL_Texture* texture = nullptr,
         SDL_Rect destination =
         {
             0, 0, 0, 0
@@ -67,7 +65,7 @@ class Node : public Clickable<Node>
      * @brief Search for a child by name.
      * 
      * @param name Name of the child to look for.
-     * @param recursive Recursivity or not.
+     * @param recursive Search in the whole tree from this node or not.
      * @return Pointer to the child or nullptr if not found.
      */
     Node* findChild(std::string name, bool recursive = false);
@@ -99,9 +97,17 @@ class Node : public Clickable<Node>
     // Getters
     //===============
 
-    Renderer* getRenderer() { return _renderer; }
-    std::string getName() { return _name; }
-    SDL_Rect getDestination() { return _destination; }
+    Renderer* getRenderer();
+    std::string getName();
+    SDL_Rect getDestination();
+    int getWidth();
+    int getHeight();
+    int getX();
+    int getY();
+    SDL_Texture* getTexture();
+    std::vector<Node*> getChildren();
+    Node* getParent();
+    bool isInTree();
 
     /**
      * @brief Return this' destination relatively to renderer origin.
@@ -110,14 +116,14 @@ class Node : public Clickable<Node>
      */
     SDL_Rect getGlobalDestination();
 
-    int getWidth() { return _destination.w; }
-    int getHeight() { return _destination.h; }
-    int getX() {return _destination.x; }
-    int getY() { return _destination.y; }
-    SDL_Texture* getTexture() { return _texture; }
-    std::vector<Node*> getChildren() { return _children; }
-    Node* getParent() { return _parent; }
-    bool isInTree();
+    /**
+     * @brief Return whether or not the node's destination
+     * is at x = 0, y = 0.
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool isAtOrigin();
 
     /**
      * @brief Get whether this object is visible or not.
@@ -151,18 +157,18 @@ class Node : public Clickable<Node>
      */
     void setRenderer(Renderer* renderer);
 
-    void setName(std::string name) { _name = name; }
-    void setDestination(SDL_Rect dst) { _destination = dst; }
+    void setName(std::string name);
+    void setDestination(SDL_Rect dst);
     void setWidth(int width);
     void setHeight(int height);
-    void setSize(int width, int height) { _destination.w = width; _destination.h = height; }
+    void setSize(int width, int height);
     void setX(int x);
     void setY(int y);
-    void setOrigin(int x, int y) { _destination.x = x; _destination.y = y; }
-    void setTexture(SDL_Texture* texture) { _texture = texture; }
+    void setOrigin(int x, int y);
+    void setTexture(SDL_Texture* texture);
     void setVisible(bool visible);
     private:
-    void setParent(Node* parent) { _parent = parent; }
+    void setParent(Node* parent);
 
 
     //===============

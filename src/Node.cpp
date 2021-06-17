@@ -3,39 +3,22 @@
 
 #include <algorithm>
 
-Node::Node(Renderer* renderer, std::string name) :
-    _renderer(renderer),
-    _name(name),
-    _texture(nullptr)
-{
-    this->initializeDestination();
-    logInfo("[Node] Instanciated node " + _name);
-}
-
 Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect destination) : 
     _renderer(renderer),
     _name(name),
     _destination(destination),
     _texture(texture)
 {
-    if(_texture != nullptr && SDL_RectEmpty(&_destination))
-    {
-        int w, h;
-        SDL_QueryTexture(_texture, nullptr, nullptr, &w, &h);
-        _destination.w = w;
-        _destination.h = h;
-    }
+    if(SDL_RectEmpty(&destination) && _texture != nullptr)
+        SDL_QueryTexture(_texture, nullptr, nullptr, &_destination.w, &_destination.h);
     logInfo("[Node] Instanciated node " + _name);
 }
 
 Node::~Node()
 {
     for(Node* child : _children)
-    {
         delete child;
-    }
     _children.clear();
-
     logInfo("[Node] Removed node " + _name);
 }
 
@@ -71,10 +54,14 @@ bool Node::removeChild(Node* child, bool deleteNode)
     auto search = std::find(_children.begin(), _children.end(), child);
     if(search != _children.end())
     {
+        Node* child = *search;
         if(deleteNode)
-            delete *search;
+            delete child;
         else
-            (*search)->_inTree = false;
+        {
+            child->setParent(nullptr);
+            child->_inTree = false;
+        }
         _children.erase(search);
         logInfo("[Node] Removed child from " + _name + " : " + name);
         return true;
@@ -149,40 +136,30 @@ bool Node::render()
     if(!this->isVisible())
         return true;
 
+    bool ok = true;
     if(_texture != nullptr)
     {
-        if(_parent != nullptr)
-        {
-            _destination.x += _parent->getX();
-            _destination.y += _parent->getY();
-        }
-
-        SDL_Rect* rect;
         if(SDL_RectEmpty(&_destination))
-            rect = nullptr;
+            ok = _renderer->renderTexture(_texture, nullptr);
+        else if(_parent->isAtOrigin())
+            ok = _renderer->renderTexture(_texture, &_destination);
         else
-            rect = &_destination;
-
-        if(!_renderer->renderTexture(_texture, rect))
         {
+            SDL_Rect dest = this->getGlobalDestination();
+            ok = _renderer->renderTexture(_texture, &dest);
+        }
+
+        if(!ok)
             logError("[Node] Failed to render " + _name);
-            return false;
-        }
-
-        if(_parent != nullptr)
-        {
-            _destination.x -= _parent->getX();
-            _destination.y -= _parent->getY();
-        }
     }
 
     if(!this->renderChildren())
     {
         logError("[Node] " + _name + " : failed to render one or more children.");
-        return false;
+        ok = false;
     }
 
-    return true;
+    return ok;
 }
 
 bool Node::renderChildren()
@@ -201,23 +178,42 @@ bool Node::renderChildren()
 // Getters
 //===============
 
-SDL_Rect Node::getGlobalDestination()
+Renderer* Node::getRenderer() { return _renderer; }
+std::string Node::getName() { return _name; }
+SDL_Rect Node::getDestination() { return _destination; }
+int Node::getX() { return _destination.x; }
+int Node::getY() { return _destination.y; }
+SDL_Texture* Node::getTexture() { return _texture; }
+std::vector<Node*> Node::getChildren() { return _children; }
+Node* Node::getParent() { return _parent; }
+bool Node::isInTree() { return _inTree; }
+bool Node::isClickable() { return Clickable::isClickable() && this->isVisible(); }
+bool Node::isAtOrigin() { return _destination.x == 0 && _destination.y == 0; }
+
+int Node::getWidth() 
 {
-    if(_parent == nullptr)
-        return _destination;
-    else
-    {
-        SDL_Rect ret = _destination;
-        SDL_Rect parent = _parent->getGlobalDestination();
-        ret.x += parent.x;
-        ret.y += parent.y;
-        return ret;
-    }
+    if(SDL_RectEmpty(&_destination))
+        return _renderer->getWidth();
+    return _destination.w;
 }
 
-bool Node::isInTree()
+int Node::getHeight()
 {
-    return _inTree;
+    if(SDL_RectEmpty(&_destination))
+        return _renderer->getHeight();
+    return _destination.h;
+}
+
+SDL_Rect Node::getGlobalDestination()
+{
+    if(_parent == nullptr || _parent->isAtOrigin())
+        return _destination;
+
+    SDL_Rect ret = _destination;
+    SDL_Rect parent = _parent->getGlobalDestination();
+    ret.x += parent.x;
+    ret.y += parent.y;
+    return ret;
 }
 
 bool Node::isVisible()
@@ -229,11 +225,6 @@ bool Node::isVisible()
         return _visible;
 }
 
-bool Node::isClickable()
-{
-    return Clickable::isClickable() && this->isVisible();
-}
-
 
 //===============
 // Setters
@@ -242,29 +233,27 @@ bool Node::isClickable()
 void Node::setRenderer(Renderer* renderer)
 {
     if(renderer != nullptr)
-    {
         _renderer = renderer;
-    }
 }
 
-void Node::setWidth(int width)
+void Node::setName(std::string name) { _name = name; }
+void Node::setDestination(SDL_Rect dst) { _destination = dst; }
+void Node::setWidth(int width) { _destination.w = width; }
+void Node::setHeight(int height) { _destination.h = height; }
+void Node::setX(int x) { _destination.x = x; }
+void Node::setY(int y) { _destination.y = y; }
+void Node::setTexture(SDL_Texture* texture) { _texture = texture; }
+
+void Node::setSize(int width, int height)
 {
-    _destination.w = width;
+    this->setWidth(width);
+    this->setHeight(height);
 }
 
-void Node::setHeight(int height)
+void Node::setOrigin(int x, int y)
 {
-    _destination.h = height;
-}
-
-void Node::setX(int x)
-{
-    _destination.x = x;
-}
-
-void Node::setY(int y)
-{
-    _destination.y = y;
+    this->setX(x);
+    this->setY(y);
 }
 
 void Node::setVisible(bool visible)
@@ -272,6 +261,8 @@ void Node::setVisible(bool visible)
     _visible = visible;
     logInfo("[Node] Set visibility of node " + _name + " to " + std::to_string(visible));
 }
+
+void Node::setParent(Node* parent) { _parent = parent; }
 
 
 //===============
