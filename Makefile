@@ -11,6 +11,9 @@ INCLUDE=-Iinclude/
 all:
 	$(MAKE) linux FLAGS="$(CFLAGS) $(OPTIFLAGS)"
 
+valgrind: debug
+	valgrind --leak-check=full ./build/linux/memory
+
 debug:
 	$(MAKE) linux FLAGS="$(CFLAGS) -g"
 
