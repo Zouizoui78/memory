@@ -94,8 +94,8 @@ class Memory : public Node
 
     void state1(Card* clicked);
     void state2(Card* clicked);
-    void state3(Card* clicked);
-    void state4(Card* clicked);
+    void state3();
+    void state4();
 
 
     //====================

@@ -673,7 +673,7 @@ void Memory::state2(Card* clicked)
     }
 }
 
-void Memory::state3(Card* clicked)
+void Memory::state3()
 {
     _revealedCards.first->flip();
     _revealedCards.second->flip();
@@ -683,7 +683,7 @@ void Memory::state3(Card* clicked)
     logInfo("[Memory] Entering state 1.");
 }
 
-void Memory::state4(Card* clicked)
+void Memory::state4()
 {
     this->removeCard(_revealedCards.first);
     this->removeCard(_revealedCards.second);
@@ -740,12 +740,12 @@ bool Memory::cardCallback(Node* clicked)
 
     else if(_state == 3)
     {
-        this->state3(card);
+        this->state3();
     }
 
     else if(_state == 4)
     {
-        this->state4(card);
+        this->state4();
     }
     return true;
 }
