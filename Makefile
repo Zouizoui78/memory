@@ -53,6 +53,9 @@ all: $(OUTPUT)
 release: $(OUTPUT)
 win: $(DIST)
 
+valgrind: $(OUTPUT)
+	@valgrind --leak-check=full $(OUTPUT)
+
 $(DIST): DISTDIR=$(BUILDDIR)/$(NAME)
 $(DIST): $(OUTPUT)
 	@mkdir -p $(DISTDIR)
