@@ -52,10 +52,6 @@ endif
 all: $(OUTPUT)
 release: $(OUTPUT)
 win: $(DIST)
-test:
-	@echo $(SRC)
-	@echo $(OBJ)
-	@echo $(DEPS)
 
 $(DIST): DISTDIR=$(BUILDDIR)/$(NAME)
 $(DIST): $(OUTPUT)
