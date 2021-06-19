@@ -11,7 +11,9 @@
 class Memory : public Node
 {
     public:
+
     Memory(Renderer* renderer, SDL_Texture* spriteSheet, SDL_Texture* background);
+
     ~Memory();
 
 
@@ -19,13 +21,13 @@ class Memory : public Node
     // Util functions
     //==========================
 
-    public:
-
     void update();
     bool getQuit();
-    void quit();
+    void eventHandler(SDL_Event event);
 
     private:
+
+    void quit();
 
     Node* createMainMenu();
     Node* createGameMenu();
@@ -134,7 +136,6 @@ class Memory : public Node
     // Input handling
     //==========================
 
-    public:
     void keypress(int keycode);
     void motion();
     bool click();
@@ -147,7 +148,6 @@ class Memory : public Node
     // High scores saving
     //==========================
 
-    private:
     bool readSave();
     bool save();
 
@@ -155,8 +155,6 @@ class Memory : public Node
     //==========================
     // Attributes
     //==========================
-
-    private:
 
     bool _quit = false;
 

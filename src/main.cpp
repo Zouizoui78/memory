@@ -13,9 +13,7 @@ int main(int argc, char*argv[])
 
     Renderer r;
     if(!r.init())
-    {
         return -1;
-    }
     
     TTF_Font* font = r.loadFont("res/olivier.ttf", 40);
     if(font == nullptr)
@@ -40,25 +38,7 @@ int main(int argc, char*argv[])
 
         //Event loop.
         while(SDL_PollEvent(&event) != 0)
-        {
-            if( event.type == SDL_MOUSEBUTTONDOWN &&
-                event.button.button == SDL_BUTTON_LEFT)
-            {
-                memory.click();
-            }
-            if(event.type == SDL_KEYDOWN)
-            {
-                if(event.key.keysym.sym == SDLK_ESCAPE)
-                {
-                    logInfo("[Main] Closing.");
-                    memory.quit();
-                }
-                else
-                {
-                    memory.keypress(event.key.keysym.sym);
-                }
-            }
-        }
+            memory.eventHandler(event);
 
         memory.update();
         memory.render();

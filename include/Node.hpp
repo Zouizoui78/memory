@@ -175,16 +175,17 @@ class Node : public Clickable<Node>
     void setOrigin(int x, int y);
     void setTexture(SDL_Texture* texture);
     void setVisible(bool visible);
-    private:
+
     void setParent(Node* parent);
 
 
     //===============
     // Others
     //===============
-    public:
+    protected:
     void initializeDestination();
 
+    public:
     void centerX();
     void centerY();
 

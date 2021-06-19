@@ -698,6 +698,27 @@ void Memory::state4()
 // Input handling
 //==========================
 
+void Memory::eventHandler(SDL_Event event)
+{
+    if( event.type == SDL_MOUSEBUTTONDOWN &&
+        event.button.button == SDL_BUTTON_LEFT)
+    {
+        this->click();
+    }
+    if(event.type == SDL_KEYDOWN)
+    {
+        if(event.key.keysym.sym == SDLK_ESCAPE)
+        {
+            logInfo("[Memory] Closing.");
+            this->quit();
+        }
+        else
+        {
+            this->keypress(event.key.keysym.sym);
+        }
+    }
+}
+
 void Memory::keypress(int keycode)
 {
     if(keycode == SDLK_SPACE)
