@@ -10,7 +10,7 @@ Node::Node(Renderer* renderer, std::string name, SDL_Texture* texture, SDL_Rect 
     _destination(destination),
     _texture(texture)
 {
-    if(_texture != nullptr && SDL_RectEmpty(&destination))
+    if(_texture != nullptr && this->hasEmptyDestination())
     {
         if(SDL_QueryTexture(_texture, nullptr, nullptr, &_destination.w, &_destination.h) == -1)
             throw std::runtime_error("Failed to query texture for node " + _name);
@@ -131,19 +131,19 @@ Node* Node::findChild(std::string name, bool recursive)
 
 bool Node::render()
 {
+    if(!this->isVisible())
+        return true;
+
     if(_renderer == nullptr)
     {
         logError("[Node] Cannot render texture for node " + _name + ", renderer = nullptr");
         return false;
     }
 
-    if(!this->isVisible())
-        return true;
-
     bool ok = true;
     if(_texture != nullptr)
     {
-        if(SDL_RectEmpty(&_destination))
+        if(this->hasEmptyDestination())
             ok = _renderer->renderTexture(_texture, nullptr);
         else if(_parent->isAtOrigin())
             ok = _renderer->renderTexture(_texture, &_destination);
@@ -194,16 +194,21 @@ bool Node::isInTree() { return _inTree; }
 bool Node::isClickable() { return Clickable::isClickable() && this->isVisible(); }
 bool Node::isAtOrigin() { return _destination.x == 0 && _destination.y == 0; }
 
+bool Node::hasEmptyDestination()
+{
+    return SDL_RectEmpty(&_destination);
+}
+
 int Node::getWidth() 
 {
-    if(SDL_RectEmpty(&_destination))
+    if(this->hasEmptyDestination())
         return _renderer->getWidth();
     return _destination.w;
 }
 
 int Node::getHeight()
 {
-    if(SDL_RectEmpty(&_destination))
+    if(this->hasEmptyDestination())
         return _renderer->getHeight();
     return _destination.h;
 }

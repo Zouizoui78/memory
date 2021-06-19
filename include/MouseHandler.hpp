@@ -7,8 +7,7 @@
 class MouseHandler
 {
     public:
-    MouseHandler();
-    MouseHandler(SDL_Rect action_area);
+    MouseHandler(SDL_Rect action_area = { 0, 0, 0, 0 });
     ~MouseHandler();
 
     bool addSubscriber(Node* node);

@@ -3,13 +3,6 @@
 
 #include <algorithm>
 
-MouseHandler::MouseHandler()
-{
-    _normalCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
-    _handCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
-    _action_area = { 0, 0, 0, 0 };
-}
-
 MouseHandler::MouseHandler(SDL_Rect action_area) : _action_area(action_area)
 {
     _normalCursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);

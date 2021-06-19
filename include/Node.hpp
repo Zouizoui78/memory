@@ -110,6 +110,14 @@ class Node : public Clickable<Node>
     bool isInTree();
 
     /**
+     * @brief Return true if this' destination
+     * has width and height at 0.
+     * 
+     * @return yes/no
+     */
+    bool hasEmptyDestination();
+
+    /**
      * @brief Return this' destination relatively to renderer origin.
      * 
      * @return SDL_Rect 
