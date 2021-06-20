@@ -45,7 +45,7 @@ else ifeq ($(word 1, $(MAKECMDGOALS)), win)
 	OUTPUT=$(BUILDDIR)/$(NAME).exe
 	DIST=$(BUILDDIR)/$(NAME).zip
 	COMPILER=i686-w64-mingw32-g++
-	LFLAGS:=-Lextlib/lib -lmingw32 -lSDL2main $(LFLAGS) -mwindows
+	LFLAGS:=icon/icon.res -Lextlib/lib -lmingw32 -lSDL2main $(LFLAGS) -mwindows
 	OTHER=-D WINDOWS
 endif
 
