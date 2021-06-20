@@ -428,11 +428,13 @@ bool Memory::setPlayers(int players)
 
 bool Memory::onePlayer(Node* n)
 {
+    (void) n;
     return this->setPlayers(1);
 }
 
 bool Memory::twoPlayers(Node* n)
 {
+    (void) n;
     return this->setPlayers(2);
 }
 
@@ -486,6 +488,7 @@ bool Memory::changePairs(int offset)
 
 bool Memory::incPairs(Node* n)
 {
+    (void) n;
     if(this->changePairs(1))
     {
         logInfo("[Memory] Increased pairs to " + std::to_string(_pairs));
@@ -496,6 +499,7 @@ bool Memory::incPairs(Node* n)
 
 bool Memory::incPairs10(Node* n)
 {
+    (void) n;
     if(this->changePairs(10))
     {
         logInfo("[Memory] Increased pairs to " + std::to_string(_pairs));
@@ -506,6 +510,7 @@ bool Memory::incPairs10(Node* n)
 
 bool Memory::decPairs(Node* n)
 {
+    (void) n;
     if(this->changePairs(-1))
     {
         logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
@@ -516,6 +521,7 @@ bool Memory::decPairs(Node* n)
 
 bool Memory::decPairs10(Node* n)
 {
+    (void) n;
     if(this->changePairs(-10))
     {
         logInfo("[Memory] Decreased pairs to " + std::to_string(_pairs));
@@ -532,6 +538,7 @@ bool Memory::decPairs10(Node* n)
  */
 bool Memory::start(Node* n)
 {
+    (void) n;
     Node* menu = this->createGameMenu();
     if(menu == nullptr)
     {
@@ -558,8 +565,9 @@ bool Memory::start(Node* n)
  * Destroy the running game
  * and brings back the main menu.
  */
-bool Memory::newGame(Node*)
+bool Memory::newGame(Node* n)
 {
+    (void) n;
     bool ok = true;
     this->_mainMenu->setVisible(true);
 
@@ -598,8 +606,9 @@ void Memory::quit()
     _quit = true;
 }
 
-bool Memory::buttonQuit(Node* node)
+bool Memory::buttonQuit(Node* n)
 {
+    (void) n;
     this->quit();
     return true;
 }

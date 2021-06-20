@@ -127,9 +127,9 @@ class Memory : public Node
      * Destroy the running game
      * and brings back the main menu.
      */
-    bool newGame(Node*);
+    bool newGame(Node* n);
 
-    bool buttonQuit(Node*);
+    bool buttonQuit(Node* n);
 
 
     //==========================

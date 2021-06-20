@@ -5,7 +5,7 @@ MINGW=/usr/bin/i686-w64-mingw32-g++
 
 # -MMD -MP generates .d files that are Makefiles
 # containing header dependencies for each object file.
-CFLAGS=-std=c++17 -Wall -Werror -Wno-deprecated -MMD -MP
+CFLAGS=-std=c++17 -Wall -Wextra -Werror -Wno-deprecated -MMD -MP
 OPTI=-g
 
 # Linking flags
