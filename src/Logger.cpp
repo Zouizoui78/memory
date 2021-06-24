@@ -22,7 +22,11 @@ void log(std::string level, std::string msg)
 
 void logInfo(std::string msg)
 {
+    #ifdef DEBUG
     log("INFO", msg);
+    #else
+    msg.clear();
+    #endif
 }
 
 void logWarning(std::string msg)
