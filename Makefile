@@ -9,12 +9,12 @@ CFLAGS=-std=c++17 -Wall -Wextra -Werror -Wno-deprecated -MMD -MP
 OPTI=-g
 
 # Linking flags
-LFLAGS=-lSDL2 -lSDL2_ttf
+LFLAGS=-lSDL2 -lSDL2_ttf -lstdc++fs
 
 # Include variables
 INCLUDEEXT=.hpp
 INCLUDEDIR=include
-IFLAGS=-Iinclude -I/usr/include/SDL2 -I/usr/include/date
+IFLAGS=-Iinclude -Iextlib/include
 
 # SRCs variables
 SRCDIR=src
@@ -45,7 +45,7 @@ else ifeq ($(word 1, $(MAKECMDGOALS)), win)
 	OUTPUT=$(BUILDDIR)/$(NAME).exe
 	DIST=$(BUILDDIR)/$(NAME).zip
 	COMPILER=i686-w64-mingw32-g++
-	LFLAGS:=icon/icon.res -Lextlib/lib -lmingw32 -lSDL2main $(LFLAGS) -mwindows
+	LFLAGS:=icon/icon.res -Lextlib/lib -static-libgcc -static-libstdc++ -lmingw32 -lSDL2main $(LFLAGS) -mwindows
 	OTHER=-D WINDOWS
 else
 	OTHER=-D DEBUG
@@ -64,7 +64,6 @@ $(DIST): $(OUTPUT)
 	@echo Preparing dist directory...
 	@cp $(OUTPUT) $(DISTDIR)/
 	@cp -r res $(DISTDIR)/
-	@cp /usr/i686-w64-mingw32/bin/{libgcc_s_dw2-1.dll,libstdc++-6.dll,libwinpthread-1.dll} $(DISTDIR)/
 	@cp extlib/bin/* $(DISTDIR)
 	@echo Compressing dist directory...
 	@cd $(BUILDDIR) && zip -r $(NAME).zip $(NAME) > /dev/null

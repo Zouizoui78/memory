@@ -1,7 +1,6 @@
 #ifndef MOUSEHANDLER
 #define MOUSEHANDLER
 
-#include <SDL.h>
 #include "Node.hpp"
 
 class MouseHandler

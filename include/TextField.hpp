@@ -2,7 +2,6 @@
 #define TEXTFIELD
 
 #include "Node.hpp"
-#include "SDL_ttf.h"
 
 class TextField : public Node
 {

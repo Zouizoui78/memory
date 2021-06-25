@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-#include <SDL.h>
-
 #include "Renderer.hpp"
 #include "Clickable.hpp"
 
