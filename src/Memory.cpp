@@ -329,14 +329,22 @@ void Memory::removeCard(Card* card)
 
 void Memory::update()
 {
-    this->motion();
+    if(!_pause)
+        this->motion();
+
     if(_state > 0)
     {
         uint32_t now = SDL_GetTicks();
-        if(_pairsFound < _pairs && now - _previousTimeChange > 1000)
+        uint32_t sincePreviousChange = now - _previousTimeChange;
+        if(_pairsFound < _pairs && sincePreviousChange > 1000)
         {
-            _gameDuration = now - _gameStartTime;
-            this->updateTimer();
+            if(_pause)
+                _gameStartTime += sincePreviousChange;
+            else
+            {
+                _gameDuration = now - _gameStartTime;
+                this->updateTimer();
+            }
             _previousTimeChange = now;
         }
         for(Player* p : _players)
@@ -709,32 +717,32 @@ void Memory::state4()
 
 void Memory::eventHandler(SDL_Event event)
 {
-    if( event.type == SDL_MOUSEBUTTONDOWN &&
-        event.button.button == SDL_BUTTON_LEFT)
+    if(
+        !_pause && event.type == SDL_MOUSEBUTTONDOWN &&
+        event.button.button == SDL_BUTTON_LEFT
+    )
     {
         this->click();
     }
-    if(event.type == SDL_KEYDOWN)
-    {
-        if(event.key.keysym.sym == SDLK_ESCAPE)
-        {
-            logInfo("[Memory] Closing.");
-            this->quit();
-        }
-        else
-        {
-            this->keypress(event.key.keysym.sym);
-        }
-    }
+
+    else if(event.type == SDL_MOUSEBUTTONDOWN &&
+            event.button.button == SDL_BUTTON_RIGHT)
+        _pause = !_pause;
+
+    else if(event.type == SDL_KEYDOWN)
+        this->keypress(event.key.keysym.sym);
 }
 
 void Memory::keypress(int keycode)
 {
-    if(keycode == SDLK_SPACE)
+    if(keycode == SDLK_ESCAPE)
     {
-        Node* node = this->_mainMenu;
-        node->setVisible(!node->isVisible());
+        logInfo("[Memory] Closing.");
+        this->quit();
     }
+
+    else if(keycode == SDLK_SPACE)
+        _pause = !_pause;
 }
 
 void Memory::motion()

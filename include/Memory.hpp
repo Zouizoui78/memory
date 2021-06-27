@@ -157,6 +157,7 @@ class Memory : public Node
     //==========================
 
     bool _quit = false;
+    bool _pause = false;
 
     /**
      * @brief Describe the game state.
