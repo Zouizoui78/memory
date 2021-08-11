@@ -65,6 +65,7 @@ $(DIST): $(OUTPUT)
 	@cp $(OUTPUT) $(DISTDIR)/
 	@cp -r res $(DISTDIR)/
 	@cp extlib/bin/* $(DISTDIR)
+	@cp /usr/i686-w64-mingw32/bin/libwinpthread-1.dll $(DISTDIR)
 	@echo Compressing dist directory...
 	@cd $(BUILDDIR) && zip -r $(NAME).zip $(NAME) > /dev/null
 

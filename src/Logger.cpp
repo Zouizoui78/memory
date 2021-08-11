@@ -2,22 +2,33 @@
 
 #include <iostream>
 #include <fstream>
-#include <date/date.h>
+#include <ctime>
 
+std::string getTime (const char* format = "%d-%m-%Y %H:%M:%S")
+{
+  time_t rawtime;
+  struct tm* timeinfo;
+  char buffer[80];
+
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+
+  strftime(buffer, sizeof(buffer), format, timeinfo);
+  return std::string(buffer);
+}
 
 void log(std::string level, std::string msg)
 {
-    using namespace date;
     bool tofile = true;
     if(tofile)
     {
         std::ofstream file;
         file.open ("log.txt", std::fstream::out | std::fstream::app);
-        file << std::chrono::system_clock::now() << " [" << level << "] " << msg << std::endl;
+        file << getTime() << " [" << level << "] " << msg << std::endl;
         file.close();
     }
     else
-        std::cout << std::chrono::system_clock::now() << " [" << level << "] " << msg << std::endl;
+        std::cout << getTime() << " [" << level << "] " << msg << std::endl;
 }
 
 void logInfo(std::string msg)
