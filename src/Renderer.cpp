@@ -35,6 +35,8 @@ bool Renderer::init()
         _height,
     #ifdef WINDOWS
         SDL_WINDOW_BORDERLESS
+    #elif defined(DEBUG)
+        SDL_WINDOW_BORDERLESS
     #else
         SDL_WINDOW_FULLSCREEN
     #endif

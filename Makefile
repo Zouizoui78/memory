@@ -1,7 +1,7 @@
 # Base variables
 NAME=memory
 COMPILER=g++
-MINGW=/usr/bin/i686-w64-mingw32-g++
+MINGW=i686-w64-mingw32-g++
 
 # -MMD -MP generates .d files that are Makefiles
 # containing header dependencies for each object file.
@@ -44,7 +44,7 @@ else ifeq ($(word 1, $(MAKECMDGOALS)), win)
 	BUILDDIR=$(BUILD)/windows
 	OUTPUT=$(BUILDDIR)/$(NAME).exe
 	DIST=$(BUILDDIR)/$(NAME).zip
-	COMPILER=i686-w64-mingw32-g++
+	COMPILER=$(MINGW)
 	LFLAGS:=icon/icon.res -Lextlib/lib -static-libgcc -static-libstdc++ -lmingw32 -lSDL2main $(LFLAGS) -mwindows
 	OTHER=-D WINDOWS
 else
